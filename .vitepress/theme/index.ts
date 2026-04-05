@@ -10,10 +10,13 @@ import './custom.css';
 const CraftLayout = defineComponent({
   setup() {
     const route = useRoute();
+    let zoomInstance: ReturnType<typeof mediumZoom> | null = null;
 
     const initZoom = () => {
-      // Detach previous zoom instances before re-attaching
-      mediumZoom('.vp-doc img, .feature-screenshot img, .craft-showcase img, .scheme-screenshot', {
+      if (zoomInstance) {
+        zoomInstance.detach();
+      }
+      zoomInstance = mediumZoom('.vp-doc img, .feature-screenshot img, .craft-showcase img, .scheme-screenshot', {
         background: 'rgba(0, 0, 0, 0.85)',
       });
     };
@@ -27,6 +30,12 @@ const CraftLayout = defineComponent({
         root.className = root.className.replace(/\bscheme-\w+\b/g, '').trim();
         root.classList.add(`scheme-${saved}`);
       }
+
+      // Re-attach zoom when scheme changes (SchemeImage swaps <img> elements)
+      const observer = new MutationObserver(() => {
+        setTimeout(initZoom, 300);
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     });
     watch(() => route.path, () => nextTick(() => setTimeout(initZoom, 500)));
 
