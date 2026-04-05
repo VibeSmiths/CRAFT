@@ -1,0 +1,17 @@
+{
+  "id": "demo-channel",
+  "name": "Lorem Ipsum Tech",
+  "character": "Alex Demo",
+  "character_description": "A witty tech educator who explains complex topics with humor and pop culture references. Think of a caffeinated engineer who watched too many stand-up specials. Speaks in short, punchy sentences. Loves analogies involving food, movies, and existential dread.",
+  "voice": {
+    "service": "edge",
+    "voice_id": "en-US-GuyNeural",
+    "voice_name": "Guy (US)",
+    "speed": 1.0
+  },
+  "topics": ["cloud computing", "DevOps", "AI", "programming"],
+  "tags": ["tech", "tutorial", "comedy", "engineering"],
+  "avatar": null,
+  "created": "2025-01-01T00:00:00.000Z",
+  "rpm": 6
+}

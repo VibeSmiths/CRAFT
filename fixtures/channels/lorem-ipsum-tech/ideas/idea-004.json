@@ -1,0 +1,10 @@
+{
+  "id": "idea-004",
+  "title": "Docker in 60 Seconds",
+  "hook": "Containers explained faster than your container builds.",
+  "angle": "Ultra-fast explainer: what Docker is, why it exists, one command to prove it works. End with 'that's it, subscribe.'",
+  "type": "short",
+  "tags": ["docker", "devops", "tutorial"],
+  "created": "2026-02-18T11:00:00.000Z",
+  "source": "manual"
+}

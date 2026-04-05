@@ -1,0 +1,20 @@
+{
+  "id": "idea-discover-01",
+  "title": "Why Kubernetes is Overkill for Your Side Project",
+  "hook": "You don't need Kubernetes. You need a single VPS and a good night's sleep.",
+  "angle": "Counter-argument to the 'Kubernetes everything' trend. Show what you actually need vs what the hype says.",
+  "type": "long",
+  "tags": ["kubernetes", "DevOps", "hot-take", "architecture"],
+  "created": "2025-06-17T09:15:00.000Z",
+  "source": "discover",
+  "sourceUrl": "https://www.youtube.com/watch?v=example123",
+  "enrichment": {
+    "description": "In this video we explore why most side projects don't need container orchestration and what to use instead.",
+    "viewCount": 245000,
+    "likeCount": 12300,
+    "commentCount": 890,
+    "duration": "12:34",
+    "channelFollowerCount": 89000,
+    "uploadDate": "2025-05-20"
+  }
+}

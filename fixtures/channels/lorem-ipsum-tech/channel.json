@@ -1,0 +1,16 @@
+{
+  "id": "lorem-ipsum-tech",
+  "name": "Lorem Ipsum Tech",
+  "character": "Alex",
+  "character_description": "Alex is a curious tech explainer who breaks down complex topics with clear analogies and dry humor. Think of a patient teacher who happens to find everything fascinating — from quantum computing to why your printer never works. Alex speaks directly to camera with a conversational tone, occasionally pausing to acknowledge how absurd technology can be.",
+  "voice": {
+    "service": "edge",
+    "voice_id": "en-US-GuyNeural",
+    "voice_name": "Guy (Edge TTS)"
+  },
+  "topics": ["technology", "science", "ai", "space"],
+  "tags": ["explainer", "tech", "science"],
+  "avatar": null,
+  "created": "2026-01-15T10:00:00.000Z",
+  "rpm": 4
+}

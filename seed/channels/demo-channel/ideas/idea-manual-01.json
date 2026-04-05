@@ -1,0 +1,10 @@
+{
+  "id": "idea-manual-01",
+  "title": "The Cloud is Just Someone Else's Computer",
+  "hook": "Everyone says 'move to the cloud' like it's magic. It's not magic. It's someone else's computer that you're renting by the millisecond.",
+  "angle": "Demystify cloud computing by comparing it to renting vs owning a house, with increasingly absurd analogies.",
+  "type": "long",
+  "tags": ["cloud", "AWS", "humor", "explainer"],
+  "created": "2025-06-15T10:30:00.000Z",
+  "source": "manual"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "idea-005",
+  "title": "The Internet Runs on Submarines",
+  "hook": "99% of international internet traffic flows through cables on the ocean floor. Here's what happens when one breaks.",
+  "angle": "Map the undersea cable network, explain how repairs work (cable ships, ROVs), and cover the geopolitical implications of cable cutting.",
+  "type": "long",
+  "tags": ["infrastructure", "internet", "geopolitics"],
+  "created": "2026-02-20T08:30:00.000Z",
+  "source": "discover",
+  "sourceUrl": "https://www.youtube.com/watch?v=example123"
+}

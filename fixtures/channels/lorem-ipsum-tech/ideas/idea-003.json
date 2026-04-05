@@ -1,0 +1,11 @@
+{
+  "id": "idea-003",
+  "title": "AI Can Now Write Music — Should Musicians Worry?",
+  "hook": "I gave an AI 30 seconds to compose a symphony. What happened next broke my brain.",
+  "angle": "Compare Suno, Udio, and MusicGen output quality. Interview format with Alex reacting to AI vs human compositions blind.",
+  "type": "long",
+  "tags": ["ai", "music", "creativity"],
+  "created": "2026-02-15T16:45:00.000Z",
+  "source": "ai",
+  "convertedToScript": "script-001"
+}

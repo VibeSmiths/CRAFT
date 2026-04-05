@@ -1,0 +1,17 @@
+{
+  "name": "craft-docs",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev --host 0.0.0.0",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "screenshots": "npx playwright test screenshots.spec.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "vitepress": "^1.6.0"
+  },
+  "dependencies": {
+    "medium-zoom": "^1.1.0"
+  }
+}

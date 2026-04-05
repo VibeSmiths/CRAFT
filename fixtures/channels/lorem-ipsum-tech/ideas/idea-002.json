@@ -1,0 +1,10 @@
+{
+  "id": "idea-002",
+  "title": "The CPU Cache Trick That Makes Games 10x Faster",
+  "hook": "Your CPU has a secret weapon that game developers exploit every day — and most programmers have never heard of it.",
+  "angle": "Explain CPU cache lines, data-oriented design, and why iterating arrays is faster than chasing pointers. Use a grocery store analogy.",
+  "type": "long",
+  "tags": ["programming", "hardware", "gaming"],
+  "created": "2026-02-12T09:15:00.000Z",
+  "source": "manual"
+}

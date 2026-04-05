@@ -1,0 +1,10 @@
+{
+  "id": "idea-ai-01",
+  "title": "5 Git Commands That Will Save Your Life",
+  "hook": "You've been using git add, commit, push like a caveman. There are 5 commands that separate the juniors from the seniors.",
+  "angle": "Fast-paced Short showing lesser-known git commands (stash, bisect, reflog, cherry-pick, worktree) with dramatic reactions.",
+  "type": "short",
+  "tags": ["git", "programming", "tips", "shorts"],
+  "created": "2025-06-16T14:00:00.000Z",
+  "source": "ai"
+}
