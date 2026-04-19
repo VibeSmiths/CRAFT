@@ -1,6 +1,11 @@
 # Settings
 
-Access channel settings by clicking the **gear icon** on a channel in the sidebar, or by clicking the **Settings** nav item that appears under the channel name in the sidebar when a channel is selected.
+Access channel settings from the top chrome. Two paths — both open the same panel:
+
+1. **Right-rail link** — when a channel is selected, a **Settings** button appears next to Resources / Marketplace on the right side of the stage rail.
+2. **Channel pill dropdown** — click the pill, then **Channel settings** in the dropdown. This is the only entry point when you're currently on a channel-agnostic view (Discover, Marketplace, etc).
+
+<SchemeImage name="settings-panel" alt="Channel settings — overview" />
 
 ## Character
 
@@ -66,9 +71,9 @@ The CLAUDE.md editor manages the context document used when Claude processes AI 
 
 Click **Regenerate from Character** to rebuild from your current settings, or edit manually and **Save**.
 
-## Color Schemes
+## Color schemes
 
-Click the **palette icon** in the sidebar footer to choose from 7 color schemes:
+Click the **avatar** in the top-right of the top chrome, then open **Theme & colors** to choose from 7 color schemes:
 
 - **Classic** — teal accent (default)
 - **Purple** — violet accent with purple-tinted surfaces

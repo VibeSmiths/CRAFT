@@ -60,18 +60,17 @@ API keys are stored per-user (encrypted AES-256-GCM in PostgreSQL) and managed v
 
 Users can change their Keycloak password without leaving the studio:
 
-1. Click your **profile avatar** in the sidebar footer
-2. In the popover, click the **Settings** (gear) icon
-3. Click the **Password** button
-4. Enter your **current password** for verification (validated against Keycloak)
-5. Enter and confirm your **new password**
-6. The new password is set via the Keycloak admin API
+1. Click your **avatar** in the top-right of the top chrome
+2. Click **Change password** in the dropdown
+3. Enter your **current password** for verification (validated against Keycloak)
+4. Enter and confirm your **new password**
+5. The new password is set via the Keycloak admin API
 
 The current password check prevents unauthorized changes if a session is left open.
 
 ## Sign Out
 
-Click the **Sign Out** button in the profile popover (sidebar footer). This redirects to `/` which clears the oauth2-proxy session and triggers the Keycloak login flow.
+Click your avatar in the top-right of the top chrome, then **Sign out** at the bottom of the dropdown. This clears the oauth2-proxy session, ends the Keycloak session, and returns you to the login flow.
 
 ## Multi-Tenant Isolation
 

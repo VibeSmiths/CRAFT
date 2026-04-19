@@ -9,7 +9,7 @@ Proposals are AI-scored content ideas that go through a curation workflow before
 3. **Review** — browse proposals sorted by score, with trend signals and timeliness indicators
 4. **Decision** — approve proposals to convert them into ideas, or reject to dismiss
 
-Proposals appear **under channels** in the sidebar (not as a standalone section).
+Open Proposals from the **channel pill dropdown** → **Proposals** in the top chrome (premium only).
 
 ## Proposal Fields
 

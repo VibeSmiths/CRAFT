@@ -24,18 +24,31 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Content Studio',
+        text: 'Studio basics',
         items: [
+          { text: 'Top chrome & ⌘K', link: '/guide/command-palette' },
           { text: 'Channels', link: '/guide/channels' },
+          { text: 'Settings', link: '/guide/settings' },
+        ],
+      },
+      {
+        text: 'Make content',
+        items: [
           { text: 'Ideas', link: '/guide/ideas' },
           { text: 'Scripts', link: '/guide/scripts' },
-          { text: 'Episodes', link: '/guide/episodes' },
-          { text: 'Proposals', link: '/guide/proposals' },
           { text: 'Discover', link: '/guide/discover' },
           { text: 'Audio (TTS)', link: '/guide/audio' },
+          { text: 'Storyboard', link: '/guide/storyboard' },
+          { text: 'Episodes', link: '/guide/episodes' },
+          { text: 'Proposals', link: '/guide/proposals' },
           { text: 'Resources', link: '/guide/resources' },
+        ],
+      },
+      {
+        text: 'Extras',
+        items: [
+          { text: 'Marketplace', link: '/guide/marketplace' },
           { text: 'Feedback', link: '/guide/feedback' },
-          { text: 'Settings', link: '/guide/settings' },
           { text: 'MCP Servers', link: '/guide/mcp-guide' },
         ],
       },

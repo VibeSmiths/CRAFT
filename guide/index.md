@@ -14,9 +14,22 @@ CRAFT Studio is a YouTube content creation platform with AI-powered idea generat
 - **Track Jobs** — Async NATS workers for AI generation, rendering, and downloads with real-time SSE updates
 - **Go Mobile** — Android companion app with full dashboard parity over your local network
 
+<SchemeImage name="top-chrome" alt="Top chrome — the Flow redesign layout" />
+
 <SchemeImage name="ideas-panel" alt="Ideas Panel" />
 
 <SchemeImage name="channel-dive" alt="Channel Deep Dive" />
+
+## Layout
+
+The Studio is organised around a **top chrome** — a single header bar — rather than a left sidebar. In it:
+
+- **Logo · channel pill · peer avatars** on the left
+- **Stage rail** across the middle (`Discover → Ideas → Scripts → Audio → Episodes`) — the five primary workflow stages
+- **⌘K command palette** slot in the middle-right, then **Resources · Settings · Marketplace · Feedback** on the far right
+- **Avatar menu** top-right (API keys, password change, theme, sign out)
+
+Channel-scoped actions (Proposals, Jobs, channel Settings) live inside the channel-pill dropdown. See [Top chrome & ⌘K](/guide/command-palette) for the full tour.
 
 ## Architecture
 

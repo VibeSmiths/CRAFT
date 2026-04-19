@@ -58,7 +58,7 @@ Drag-and-drop files directly into the Resources panel:
 
 ## Library
 
-The **Library** tab shows all your downloaded and uploaded resources. Resources is a **standalone section** in the sidebar (user-level, not nested under channels) since resources belong to you and can span multiple channels.
+The **Library** tab shows all your downloaded and uploaded resources. Resources is a **user-level** section — reach it via the **Resources** link in the top chrome's right rail. Since resources belong to you and can span multiple channels, they aren't nested under any single channel.
 
 ## Channel Assignment
 

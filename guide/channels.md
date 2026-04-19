@@ -2,18 +2,20 @@
 
 Channels are the top-level organizer in CRAFT. Each channel has its own character personality, topics, voice settings, and content library.
 
-## Creating a Channel
+## Creating a channel
 
-1. Click **+ Add Channel** in the sidebar
-2. Enter a **Channel Name** (e.g., "Tech Explained")
-3. Enter a **Character Name** (your on-screen persona, e.g., "Alex")
-4. Click **Create**
+1. Click the **channel pill** in the top chrome (left side, next to the logo) to open the dropdown.
+2. Click **+ New channel** at the bottom.
+3. Enter a **Channel name** and optional **Character name**.
+4. Click **Create**.
 
-<SchemeImage name="create-channel" alt="Create Channel" />
+<SchemeImage name="create-channel" alt="Create Channel dialog inside the channel pill dropdown" />
 
-## Channel Settings
+You'll land in the new channel's Settings so you can configure character, voice, and topics.
 
-Click the **gear icon** that appears when hovering over a channel in the sidebar.
+## Channel settings
+
+Open them from the top chrome — either the **Settings** link in the right-rail (only visible when a channel is selected) or the channel-pill dropdown → **Channel settings**. See the full [Settings guide](/guide/settings).
 
 ### Character
 
@@ -42,9 +44,13 @@ Configure a default TTS voice for audio generation:
 
 The AI Context editor lets you view and edit the CLAUDE.md file that shapes Claude's responses for this channel. In **Character** mode, it's auto-generated from your settings. In **Raw** mode, you can write custom instructions.
 
-## Switching Channels
+## Switching channels
 
-Click any channel in the sidebar to switch. All panels (Ideas, Scripts, Discover, etc.) update to show that channel's content.
+The top chrome gives you three ways to switch:
+
+- **Peer avatars** — the next few channels sit as small avatars next to the channel pill. One click to switch.
+- **Channel pill dropdown** — shows every channel you own with subs/character, click to select.
+- **⌘K command palette** — type a channel name, hit enter. See [Top chrome & ⌘K](/guide/command-palette).
 
 ## Channel Ownership & Multi-Tenant Isolation
 
@@ -58,7 +64,7 @@ Each channel is owned by the user who created it. Access is controlled by Keyclo
 
 When you create a channel, it is automatically assigned to your user account. Admins can view and manage all channels across all users.
 
-The sidebar shows your username and role badge at the bottom.
+Your username and role live under the avatar menu in the top-right of the chrome.
 
 ## Multiple Channels
 

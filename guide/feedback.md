@@ -4,7 +4,7 @@ The Feedback panel lets you submit suggestions, bug reports, and content ideas t
 
 ## Opening the Panel
 
-Click the **speech bubble icon** in the sidebar bottom bar (next to the theme picker and docs link). This navigates to the Feedback view.
+Click **Feedback** in the top chrome's right rail (visible when a GitHub token is configured — see [AI providers](/guide/ai-providers)).
 
 ## Submitting Feedback
 
