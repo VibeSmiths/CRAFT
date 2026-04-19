@@ -1,110 +1,84 @@
 # AI Providers
 
-CRAFT supports three AI providers. All can be active simultaneously — choose per-request from the model dropdown.
+CRAFT Studio supports three AI providers. All can be active at once — pick per-request from the model dropdown. API keys are **per-user** and stored encrypted on the server — set them in **Avatar menu → API Keys**.
 
 ## Gemini (Google)
 
-**Setup**: Add `GEMINI_API_KEY` to `app/.env`
+Paste a Gemini API key in the API Keys modal (`GEMINI_API_KEY`).
 
 Get a key at [ai.google.dev](https://ai.google.dev/gemini-api/docs/api-key).
 
-**Models available**: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, and newer
+**Characteristics**
 
-**Characteristics**:
 - Streams responses token-by-token (real-time)
 - Reliable with standard API keys
 - Good for quick iterations
+- Free tier is usually enough to explore the studio
 
 ## Claude (Anthropic)
 
-**Setup**: Claude uses the [Agent SDK](https://platform.claude.com/docs/en/agent-sdk/typescript) which authenticates via your **Claude Pro subscription** (OAuth), not a separate API key.
+Claude uses the Agent SDK and authenticates via a **long-lived OAuth token**, not a paid API key. Generate a token at [claude.ai/settings/tokens](https://claude.ai/settings/tokens) and paste it into the API Keys modal as `CLAUDE_CODE_OAUTH_TOKEN`.
 
-### Requirements
-
-1. [Claude Code](https://claude.ai/code) installed and logged in on your machine
-2. OAuth credentials at `~/.claude/.credentials.json` (created automatically by Claude Code login)
-
-::: warning No API Credits Needed
-Unlike the raw Anthropic API, the Agent SDK uses your Pro subscription. The `ANTHROPIC_API_KEY` in `.env` is intentionally cleared in Docker so the SDK falls back to OAuth.
+::: tip No API credits needed
+Unlike the raw Anthropic API, the Agent SDK uses your Claude subscription. Premium users get the full Claude model family (Opus, Sonnet, Haiku) plus MCP tool access when a token is saved.
 :::
 
-### How It Works
+**Characteristics**
 
-```
-Your machine (~/.claude/) ──mount──→ Docker container
-                                         │
-                    Agent SDK spawns Claude Code CLI
-                                         │
-                    CLI authenticates via OAuth (Pro)
-                                         │
-                    MCP servers available (storytelling, comedy, etc.)
-```
-
-**Models available**: claude-sonnet-4-6, claude-opus-4-6, claude-haiku-4-5, and older
-
-**Characteristics**:
-- Responses arrive as a single block (not streamed) — the SDK filters out MCP planning text
-- May use MCP research tools for richer responses (especially Opus)
+- The SDK may use MCP research tools (storytelling, comedy, etc.) during multi-turn generation
+- Responses arrive as a single block (not streamed) — intermediate planning is filtered out
 - Excellent for complex script writing and fact-checking
 
 ## Ollama (Local LLM)
 
-**Setup**: Enable GPU services in your deployment.
+Ollama runs models on your local GPU — no API key needed, no internet after the model is pulled. Available whenever the Ollama service is reachable (GPU services are optional; see the deployment docs for your administrator).
 
-**Helm**: Set `gpu.enabled: true` and `gpu.runtime: nvidia` (or `rocm`) in `values-dev.yaml`, then upgrade:
-```bash
-helm upgrade craft ./helm/craft -f helm/craft/values-dev.yaml
-```
-Check the Ollama pod is running: `kubectl get pods -l app.kubernetes.io/component=ollama`
+### How to pull models
 
-**Docker Compose (local dev)**: `docker compose -f docker-compose.dev.yml --profile gpu up -d`
+1. Open **Channel settings** (channel pill dropdown → Channel settings, or Settings on the right rail).
+2. Scroll to the **Local AI (Ollama)** section.
+3. Click a suggested model chip, or type any model name (e.g. `llama3.1:8b`) and click **Pull**.
+4. Progress streams in real time; models persist across restarts.
 
-No API key needed — models run entirely on your local GPU.
+<SchemeImage name="ollama-models" alt="Ollama model management in Settings" />
 
-**How to pull models**:
-1. Open **Settings** (gear icon on any channel)
-2. Scroll to **Local AI (Ollama)** section
-3. Click a suggested model chip (Qwen 2.5 Coder 14B or DeepSeek R1 14B)
-4. Or type any model name (e.g. `llama3.1:8b`) and click **Pull**
-5. Progress shows in real-time; models persist across restarts in `./models/ollama/`
+### Suggested models
 
-**Suggested models**:
-
-| Model | Size | Best For |
+| Model | Size | Best for |
 |-------|------|----------|
 | `qwen2.5-coder:14b` | ~9 GB | Script writing, code-aware content |
 | `deepseek-r1:14b` | ~9 GB | Reasoning, fact-heavy scripts |
 | `llama3.1:8b` | ~5 GB | General purpose (lower VRAM) |
 
-**Characteristics**:
+### Characteristics
+
 - Streams responses token-by-token (like Gemini)
-- Fully offline — no internet needed after model download
-- GPU required for usable speed (CPU inference is very slow)
+- Fully offline once the model is downloaded
+- GPU required for usable speed
 - Models can be pulled and deleted from the Settings panel
 
-::: tip VRAM Requirements
-14B parameter models need ~10 GB VRAM. If you have 8 GB or less, use 7B/8B variants instead.
+::: tip VRAM requirements
+14B parameter models need ~10 GB VRAM. If you have 8 GB or less, pick 7B / 8B variants instead.
 :::
 
-<SchemeImage name="ollama-models" alt="Ollama model management in Settings" />
-
-## Model Selection
+## Model selection
 
 The model dropdown appears in:
-- Script Editor AI toolbar
-- AI Chat panel
-- Idea generation modal
-- Mobile app script detail
 
-All three providers show in the same dropdown when configured, grouped by provider (Claude, Gemini, Ollama). Disabled providers show a reason (e.g., "No API credits", "Service error").
+- The Script editor's Revise tab
+- AI chat
+- The Ideas panel's inline context hint
+- The mobile app's script detail
+
+All three providers show in the same dropdown when configured, grouped by provider. Providers that aren't set up for your account are disabled with a reason (e.g. "No API credits", "Service unavailable").
 
 ## Comparison
 
 | Feature | Gemini | Claude | Ollama |
 |---------|--------|--------|--------|
-| Auth | API key | OAuth (Pro subscription) | None (local) |
-| Streaming | Yes (token-by-token) | No (buffered response) | Yes (token-by-token) |
-| MCP Tools | No | Yes (storytelling, comedy, etc.) | No |
-| Speed | Fast | Slower (multi-turn possible) | Depends on GPU |
-| Cost | API credits | Included in Pro | Free (your hardware) |
-| Internet | Required | Required | Not needed (after model pull) |
+| Auth | API key | OAuth token | None (local) |
+| Streaming | Yes (token-by-token) | No (buffered) | Yes (token-by-token) |
+| MCP tools | No | Yes | No |
+| Speed | Fast | Multi-turn possible | Depends on GPU |
+| Cost | API credits | Included with Claude subscription | Free (your hardware) |
+| Internet | Required | Required | Not needed after pull |

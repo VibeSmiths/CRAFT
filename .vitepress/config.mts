@@ -17,8 +17,6 @@ export default defineConfig({
         text: 'Getting Started',
         items: [
           { text: 'Introduction', link: '/guide/' },
-          { text: 'Kubernetes / Helm', link: '/guide/kubernetes' },
-          { text: 'Local Dev (Docker)', link: '/guide/setup' },
           { text: 'AI Providers', link: '/guide/ai-providers' },
           { text: 'Roles', link: '/guide/auth' },
         ],

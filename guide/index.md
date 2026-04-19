@@ -49,35 +49,20 @@ Browser ──> Studio API ──> Studio runtime
 Mobile App ──> Same Studio API (local network)
 ```
 
-## Quick Start
+## Getting into the Studio
 
-The recommended deployment is **Helm on k3s** — see the [Kubernetes guide](/guide/kubernetes) for full setup.
+Once you're signed in, the top chrome gives you everything:
 
-```bash
-git clone https://github.com/VibeSmiths/VideoIdeas.git
-cd VideoIdeas
-helm dependency update ./helm/craft
-helm upgrade --install craft ./helm/craft -f helm/craft/values-dev.yaml \
-  --set image.tag=$(git rev-parse --short HEAD)
-```
-
-### Local Development Alternative
-
-For a self-contained local environment without Kubernetes:
-
-```bash
-cp app/.env.example app/.env    # Add your API keys
-docker compose -f docker-compose.dev.yml up -d
-```
-
-Open the studio at `http://localhost:8080` (or `/studio` behind a reverse proxy).
+- **Channel pill** on the left — switch channels, or create your first one.
+- **Stage rail** across the middle — Discover → Ideas → Scripts → Audio → Episodes.
+- **⌘K** — search and navigate everything without leaving the keyboard.
 
 ::: tip
-Only `GEMINI_API_KEY` is required to get started. Claude uses your Pro subscription (OAuth), and most other features work without API keys.
+Only a Gemini or Claude API key (set in the avatar menu → API keys) is needed to start generating. Most features work without any paid keys at all.
 :::
 
-## Next Steps
+## Next steps
 
-- [Setup & Installation](/guide/setup) — detailed environment configuration
+- [Top chrome & ⌘K](/guide/command-palette) — the shortest tour of the new layout
 - [Channels](/guide/channels) — create your first channel
 - [Ideas](/guide/ideas) — start generating content ideas
