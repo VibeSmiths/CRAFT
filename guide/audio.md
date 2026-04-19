@@ -1,15 +1,26 @@
-# Audio Production
+# Audio production
 
-The Audio panel generates speech from your scripts using text-to-speech, handles uploaded voiceovers with timestamp-based splitting, supports sound effect sections, and can layer background music under the voice track.
+The Audio room generates speech from your scripts using text-to-speech, handles uploaded voiceovers with timestamp-based splitting, supports sound effect sections, and layers background music under the voice track. Reach it via **Audio** on the top-chrome stage rail, or from the Script editor with **Send to audio** / **Promote & send**.
+
+<SchemeImage name="audio-sections" alt="Audio room — tracks / section timeline / detail" />
+
+## Layout
+
+Once a script and an active project are selected, the panel switches to a three-column **Audio room** layout:
+
+- **Left rail** — voice header (inline rename), service/RVC chip, live stats (sections / ready / pending / duration), primary actions (Generate all · Merge · Preview RVC · Strip all directions), collapsible **Voice smoothing** (TTS-only sliders), collapsible **Background bed** (upload or MusicGen tabs + volume / fade / mode), collapsible **Orphaned** (audio files no longer linked to a section).
+- **Centre** — script title + total duration at the top, **row-per-beat** section list with inline mini-waveform and status chip, insert-section + delay-ms between rows, and a **master timeline** footer with the merged output's play button and proportional timeline.
+- **Right rail** — focused section detail: text (click **Edit** for a textarea), any scene context callout, linked resources, and actions (Play · Regenerate · Upload · Record · Strip directions · Remove · delay-after slider).
 
 ## Prerequisites
 
-- A script in **Review** or **Final** status (drafts are blocked)
-- A voice configured in [Settings](/guide/settings) or selected per-project
+- A script in **Review** or **Final** status (drafts are blocked).
+- A voice configured in [Settings](/guide/settings) — or selected per-project on the first creation screen.
 
-## Two Modes
+## Two modes
 
-### TTS Mode (AI Voice)
+### TTS (AI voice)
+
 Generate speech from script text using one of four TTS providers:
 
 | Provider | Voices | Cost | Quality |
@@ -19,186 +30,143 @@ Generate speech from script text using one of four TTS providers:
 | **OpenAI** | 6 voices | Paid | Very Good |
 | **OpenedAI Speech** | 6 voices (local GPU) | Free | Very Good |
 
-Any of these carrier voices can optionally be post-processed through **RVC Voice Clone** to sound like your trained voice model (see [Voice Cloning](#voice-cloning-rvc) below).
+Any carrier voice can optionally be post-processed through **RVC Voice Clone** to sound like your trained voice model — see [Voice cloning (RVC)](#voice-cloning-rvc) below.
 
 ::: tip
-Edge TTS is the default — no API key needed. **OpenedAI Speech** is also free if you have a GPU. Enable GPU services via Helm (`gpu.enabled: true` in values.yaml) or with `docker compose -f docker-compose.dev.yml --profile gpu up -d` for local dev.
+Edge TTS is the default — no API key needed. **OpenedAI Speech** is also free if you have a GPU. Enable GPU services via Helm (`gpu.enabled: true`) or `docker compose -f docker-compose.dev.yml --profile gpu up -d` for local dev.
 :::
 
-### Upload Mode (Recorded Voiceover)
-Upload your own recorded voiceover and split it into sections by timestamp:
+### Upload (recorded voiceover)
 
-1. Create a project in **Upload** mode
-2. Upload your voiceover recording (MP3, WAV, OGG, FLAC)
-3. Set start/end timestamps (mm:ss) for each section
-4. Click **Split All** — sections are extracted as lossless WAV files
-5. Re-upload individual sections if needed (re-record a single section without re-doing everything)
+1. Create a project in **Upload** mode.
+2. Upload a recorded voiceover (MP3, WAV, OGG, FLAC, M4A).
+3. Set start/end timestamps (mm:ss) for each section — the fields auto-format on blur.
+4. Click **Split All** — sections are extracted as lossless WAV files.
+5. Re-upload any single section independently if you need to retake just that part.
 
-::: info Lossless Splits
-Upload splits use WAV format to preserve audio quality. You can replace any section independently without generation loss.
-:::
+## Creating a project
 
-## Creating a Project
-
-1. Navigate to **Audio > Create**
-2. Select a script (must be Review or Final status)
-3. Choose **AI Voice (TTS)** or **Upload** mode
-4. If TTS: select a voice and service
-5. Click **Create Project**
+1. Open the Audio room.
+2. Select a script (must be Review or Final).
+3. Choose **AI Voice (TTS)** or **Upload** mode.
+4. If TTS: pick the service and a voice.
+5. Click **Create Project**.
 
 The script is automatically parsed into sections.
 
-## Section Parsing
+## Section parsing
 
-The parser uses three strategies (in order):
+The parser tries three strategies in order:
 
-1. **Screenplay format** — detects stage directions `*(...)* ` and character dialog `**Name:** text`
-2. **Structural markers** — splits on `### headings`, `---` dividers, and `**Bold Headers**`
-3. **Paragraph fallback** — splits on double newlines if the above produce only 1 section
+1. **Screenplay format** — detects stage directions `*(...)*` and character dialog `**Name:** text`.
+2. **Structural markers** — splits on `### headings`, `---` dividers, and `**Bold Headers**`.
+3. **Paragraph fallback** — splits on double newlines if the above produce only 1 section.
 
-::: info Stage Directions
-Text in `*(stage direction)*` markers becomes **scene context** — it's not spoken by TTS but appears as production notes you can show/hide per section.
+::: info Stage directions
+Text in `*(stage direction)*` markers becomes **scene context** — not spoken by TTS but shown as an amber callout above the section row that can be toggled on/off with the eye icon.
 :::
 
-## Sound Effect Sections
+## Sound-effect sections
 
-Insert SFX/transition sections anywhere in the timeline:
+Insert SFX anywhere in the timeline: hover the gap between two rows, click **+**, pick **Sound Effect**. Upload any audio file; SFX rows carry an amber `sfx` chip and the waveform tracks the imported clip.
 
-1. Click the **+** button between sections
-2. Choose **Sound Effect** (instead of Speech)
-3. Upload an audio file for the SFX (WAV, MP3, etc.)
-4. SFX sections appear with an amber badge and Music icon
+Use SFX for transition stingers, intro/outro jingles, or ambient breaks.
 
-Use SFX sections for: transition stingers, sound effects, intro/outro jingles, ambient breaks.
+## Background bed
 
-## Background Music
+The **Background bed** section in the left rail controls the ambient layer:
 
-Layer background music under the voice track:
+- **Upload** — pick a file or drop it in. Configure volume, fade in/out, and mode (Loop / Trim to voice / Play once).
+- **Generate** (tab, if MusicGen GPU service is running) — describe the music, set duration, generate.
 
-1. Expand **Background Track** below the section timeline
-2. Choose **Upload** or **Generate** (if MusicGen GPU service is running):
-   - **Upload** — any audio file (MP3, WAV, OGG, FLAC)
-   - **Generate** — describe the music (e.g. "upbeat lo-fi hip hop"), set duration (5-30s), click Generate
-3. Configure:
-   - **Volume** — 0-100% (default 15%)
-   - **Fade In/Out** — seconds for gradual volume ramp
-   - **Mode** — Loop (repeats to match voice), Trim (cuts at voice end), Once (plays once)
-4. Background is mixed in during **Merge**
+Settings are applied during **Merge**.
 
-::: tip MusicGen
-The Generate tab appears when the MusicGen GPU service is running. Enable it via Helm (`gpu.enabled: true` in values.yaml) or `docker compose -f docker-compose.dev.yml --profile gpu up -d` for local dev. It creates instrumental tracks from text prompts using Meta's AudioCraft model.
-:::
+### Standalone music generation
 
-### Standalone Music Generation
+A dedicated **Music Generator** panel lives at `activeView: 'audio-music'` (reachable from the command palette or the resource sub-nav when applicable). It creates tracks without needing a project — useful for quickly auditioning ideas.
 
-The **Audio > Music** panel generates tracks without needing an audio project:
+## Generating audio
 
-1. Describe the music (e.g. "upbeat lo-fi hip hop, chill vibes")
-2. Set duration (5-30s) and click **Generate Music**
-3. Play back generated tracks inline with the play button
-4. **Download** as WAV or **Save to Project** as background music via the dropdown
-5. Use **AI Generate** to auto-create a prompt based on your channel's topics
+- **Generate all** — left-rail button, processes every pending section sequentially.
+- **Regenerate** (right rail / row icon) — re-generates a single section with current voice settings.
 
-Generated tracks persist for the session — you can preview multiple takes and pick the best one.
+Each row shows its status: pending / generating / ready / error. Errors get an inline message plus a red border.
 
-## Generating Audio
+## Voice controls
 
-- **Generate All** — processes every pending section sequentially
-- **Generate One** — click refresh on any section to generate just that one
-- **Regenerate** — re-generate with different voice settings
+In the left rail's **Voice smoothing** section:
 
-Each section shows its status: pending, generating, ready, or error.
-
-## Voice Controls
-
-- **Speed** — playback speed multiplier (Edge TTS, OpenAI)
+- **Speed** — playback speed multiplier (Edge TTS, OpenAI, OpenedAI Speech)
 - **Stability** (ElevenLabs) — lower = more expressive, higher = more consistent
-- **Similarity Boost** (ElevenLabs) — how closely to match the original voice
+- **Similarity boost** (ElevenLabs) — how closely to match the original voice
 
-## Linking Resources
+## Linking resources
 
-Click the **paperclip** icon on any section to link downloaded resources (images, video, audio) from your Resource Library. Linked resources appear as chips — useful for tracking which B-roll goes with which section for later video assembly.
-
-## Text Preprocessing
-
-Edge TTS doesn't support SSML, so text is automatically preprocessed:
-
-- Dashes become commas (natural pauses)
-- Ellipses become periods (longer pauses)
-- Units spelled out: `°C` becomes "degrees C"
-- Abbreviations expanded: `e.g.` becomes "for example"
+In the right-rail section detail, click **Attach**. The picker shows downloaded resources from the channel library. Linked resources appear as chips on the row — useful for tracking which B-roll goes with which section when later assembling video.
 
 ## Merging
 
-Click **Merge** to combine all ready sections into a single audio file:
+Click **Merge all** in the left rail to combine every ready section into a single audio file:
 
-- Configurable silence gaps between sections (0-10000ms)
-- Mixed formats supported (WAV + MP3 sections normalized automatically)
-- If a background track is configured, it's layered under the voice with fade in/out
+- Silence gaps between sections come from each row's `delayAfter` slider.
+- Mixed formats (WAV + MP3) are normalised automatically.
+- If a background track is configured, it's layered under the voice with fade in/out.
 
 ### Merge with RVC
 
-When your channel has an **RVC Voice Model** configured in Settings, two additional buttons appear:
+When the channel has an **RVC Voice Model** configured, the merge button reads **Merge + RVC** and a **Preview RVC** shortcut appears next to it — it converts just the first section so you can audition the cloned voice without a full merge.
 
-- **Merge All + RVC** — merges all sections, applying RVC voice conversion to each section before concatenation. Sections are copied to temp files, converted through RVC, then concatenated and cleaned up
-- **Preview RVC** — converts just the first section through RVC so you can quickly audition the cloned voice without a full merge
+Once merged, the master timeline footer at the bottom of the centre column shows the play button, total duration, and a **Finalize & create episode** button that promotes the project into an Episode.
 
-The final output is an MP3 file ready for video production.
-
-## Voice Cloning (RVC)
+## Voice cloning (RVC)
 
 Clone your voice using RVC v2 — it post-processes **any** TTS carrier voice into your custom voice. RVC is not a standalone TTS service; it's an optional post-processing toggle that works with Edge TTS, ElevenLabs, OpenAI, or OpenedAI Speech. Requires the GPU profile.
 
-### Step 1: Collect Voice Samples
+### Step 1 — Collect voice samples
 
-Record or gather 10-50 minutes of clean audio of the target voice.
+Record or gather 10–50 minutes of clean audio. Avoid background music or noise; use a consistent mic and room. Supported formats: WAV, MP3, OGG, FLAC, M4A.
 
-- Avoid background music or noise — consistent mic setup and room acoustics improve results
-- Multiple recordings from the same session work best
-- Supported formats: WAV, MP3, OGG, FLAC, M4A
-
-Navigate to **Audio > Train Voice** and drag-and-drop your files into the upload zone. The Setup Guide is located at the top of VoiceTrainPanel, next to the **Record Session** button. The progress bar tracks total duration — aim for at least 10 minutes (30 minutes ideal).
+Open the **Voice training** panel (`activeView: 'audio-train'` — reachable via command palette). Drag-and-drop your files into the upload zone; the progress bar tracks total duration.
 
 ::: tip
-You can also record audio externally and upload it via [Audio > Create](./audio#upload-mode) in Upload mode, then export the sections as WAV files for training input.
+You can also record externally and upload via the Audio room's Upload mode, then export the sections as WAV files for training input.
 :::
 
-### Step 2: Train a Model
+### Step 2 — Train a model
 
 Training happens outside CRAFT using free tools:
 
-- **[Applio](https://github.com/IAHispano/Applio)** — recommended GUI for RVC training (free, runs locally)
+- **[Applio](https://github.com/IAHispano/Applio)** — recommended GUI for RVC training (free, local)
 - **Google Colab notebooks** — free GPU training in the cloud
 
-Use your uploaded voice samples as input. Training takes 20-60 minutes depending on settings (2000-6000 steps). The output is a `.pth` model file.
+Use your uploaded voice samples as input. Training takes 20–60 minutes depending on settings (2000–6000 steps). The output is a `.pth` model file.
 
-### Step 3: Upload Your Model
+### Step 3 — Upload your model
 
-1. In the **Upload Voice Model** section, select your `.pth` file (or a `.zip` containing `.pth` + `.index`)
-2. The model appears in the Trained Models list
-3. Upload multiple models for different voices or styles
+1. In the voice-training panel, select your `.pth` file (or a `.zip` containing `.pth` + `.index`).
+2. The model appears in the Trained Models list.
+3. Upload multiple models for different voices or styles.
 
-### Step 4: Enable RVC on Your Channel
+### Step 4 — Enable RVC on your channel
 
-1. Open your channel's **Settings** (gear icon on channel hover)
-2. Under **Default Voice**, select any TTS service (Edge TTS, ElevenLabs, OpenAI, or OpenedAI Speech) and choose a carrier voice
-3. Enable the **RVC Voice Clone (optional)** dropdown and select your trained model
-4. Click **Save**
+1. Open the channel-pill dropdown → **Channel settings**.
+2. Under **Default Voice**, select any TTS service and choose a carrier voice.
+3. Enable the **RVC Voice Clone (optional)** dropdown and select your trained model.
+4. Click **Save**.
 
-When you create an audio project, it will use a two-stage pipeline:
-1. Your chosen TTS service generates the base speech with the carrier voice
-2. RVC converts the carrier audio into your cloned voice
+When you create an audio project, it uses a two-stage pipeline:
+1. Your chosen TTS service generates the base speech with the carrier voice.
+2. RVC converts the carrier audio into your cloned voice.
 
 ::: tip
 The carrier voice affects pacing and inflection but not the final timbre — RVC replaces the voice character entirely. Pair it with Edge TTS for a completely free pipeline, or use ElevenLabs/OpenAI for higher-quality carrier speech.
 :::
 
-### Quick Test
+## Text preprocessing
 
-After configuring, go to **Audio > Create**, select a script, and click **Create Project**. The service will show your chosen TTS provider plus the RVC model name. Generate a section to hear the result.
+Edge TTS doesn't support SSML, so text is automatically preprocessed:
 
-## Preview
-
-Use **Preview Sections** to see how your script will be split before creating a project.
-
-<SchemeImage name="audio-sections" alt="Audio Sections" />
+- Dashes become commas (natural pauses)
+- Ellipses become periods (longer pauses)
+- Units spelled out: `°C` → "degrees C"
+- Abbreviations expanded: `e.g.` → "for example"

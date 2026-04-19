@@ -110,25 +110,83 @@ async function apiDelete(path: string) {
   await fetch(`${BASE}${path}`, { method: 'DELETE', headers: AUTH_HEADERS });
 }
 
+// TopChrome navigation helpers (post-Flow-redesign).
+//
+// The old Sidebar (<aside>) was replaced by TopChrome (<header>) with a
+// channel pill + stage rail (Discover / Ideas / Scripts / Audio / Episodes)
+// + right-rail links (Resources / Settings / Marketplace / Feedback).
+// Channel-scoped actions (Proposals / Jobs / Channel settings) live inside
+// the channel-pill dropdown. Test hook: window.__craftStore exposes the
+// Zustand store for views not on the chrome.
+
 async function selectChannel(page: Page) {
-  const channel = page.locator('aside button', { hasText: CHANNEL_NAME }).first();
-  if (await channel.isVisible()) {
-    await channel.click();
-    await page.waitForTimeout(500);
-  }
+  if (!dummyChannelId) return;
+  // Fastest + most stable: go through the store directly.
+  await page.evaluate((id) => {
+    const store = (window as any).__craftStore;
+    if (store) store.setState({ selectedChannelId: id });
+  }, dummyChannelId);
+  await page.waitForTimeout(400);
 }
 
-async function clickChannelNav(page: Page, label: string) {
-  const btn = page.locator('aside button', { hasText: label }).first();
+/** Click a primary stage-rail button (Discover / Ideas / Scripts / Audio / Episodes). */
+async function clickStageRail(page: Page, label: string) {
+  const btn = page.locator('header button', { hasText: new RegExp(`^\\s*${label}\\s*$`, 'i') }).first();
   if (await btn.isVisible()) {
     await btn.click();
     await page.waitForTimeout(800);
   }
 }
 
-async function clickGlobalNav(page: Page, label: string) {
-  await page.locator(`nav >> text=${label}`).first().click();
+/** Set the activeView directly through the exposed store. Use for views without a chrome entry. */
+async function setView(page: Page, view: string) {
+  await page.evaluate((v) => {
+    const store = (window as any).__craftStore;
+    if (store) store.setState({ activeView: v });
+  }, view);
   await page.waitForTimeout(800);
+}
+
+/** Open the channel pill dropdown and click a labelled action (Channel settings / Proposals / Jobs). */
+async function clickChannelDropdown(page: Page, label: string) {
+  // The pill is the first button in the header after the logo.
+  const pill = page.locator('header button:has(> div.rounded-full)').first();
+  if (!(await pill.isVisible())) return;
+  await pill.click();
+  await page.waitForTimeout(300);
+  const item = page.locator('header button', { hasText: new RegExp(`^\\s*${label}\\s*$`, 'i') }).first();
+  if (await item.isVisible()) {
+    await item.click();
+    await page.waitForTimeout(800);
+  } else {
+    // Close dropdown if not found
+    await page.keyboard.press('Escape');
+  }
+}
+
+/** Back-compat shims so existing test bodies keep working. */
+async function clickChannelNav(page: Page, label: string) {
+  // Ideas / Scripts / Audio / Episodes now sit on the stage rail.
+  // Channel settings / Proposals / Jobs live in the channel-pill dropdown.
+  if (['Ideas', 'Scripts', 'Audio', 'Episodes', 'Discover'].includes(label)) {
+    await clickStageRail(page, label);
+  } else if (['Settings', 'Channel settings'].includes(label)) {
+    await clickChannelDropdown(page, 'Channel settings');
+  } else if (['Proposals', 'Jobs'].includes(label)) {
+    await clickChannelDropdown(page, label);
+  } else {
+    // Fallback: try a header text match
+    const btn = page.locator('header button', { hasText: label }).first();
+    if (await btn.isVisible()) {
+      await btn.click();
+      await page.waitForTimeout(800);
+    }
+  }
+}
+
+async function clickGlobalNav(page: Page, label: string) {
+  // Discover is on the stage rail; Resources/Marketplace/Feedback are on the right rail.
+  await clickStageRail(page, label);
 }
 
 // Intercept channel list to show only the dummy channel
@@ -221,7 +279,9 @@ test.describe('Documentation Screenshots', () => {
     test.beforeEach(async ({ page }) => {
       await mockChannelList(page);
       await page.goto('/');
-      await page.waitForSelector('aside', { timeout: 15000 });
+      await page.waitForSelector('header', { timeout: 15000 });
+      // Wait for the store hook to be attached
+      await page.waitForFunction(() => typeof (window as any).__craftStore !== 'undefined', { timeout: 10000 });
     });
 
       test('landing page', async ({ page }) => {
@@ -268,7 +328,7 @@ test.describe('Documentation Screenshots', () => {
         if (await script.isVisible()) {
           await script.click();
           await page.waitForTimeout(1000);
-          const factBtn = page.locator('button', { hasText: 'Fact Check' }).first();
+          const factBtn = page.locator('button', { hasText: /fact.check/i }).first();
           if (await factBtn.isVisible()) {
             await factBtn.click();
             await page.waitForTimeout(8000);
@@ -301,8 +361,9 @@ test.describe('Documentation Screenshots', () => {
         test.setTimeout(180000);
         await selectChannel(page);
         await clickGlobalNav(page, 'Discover');
-        // Search and wait for results
-        const searchInput = page.locator('input[placeholder*="Search YouTube"]').first();
+        await page.waitForTimeout(500);
+        // The left filter rail has a single search input at the top
+        const searchInput = page.locator('aside input[type="text"], main input[type="text"]').first();
         if (await searchInput.isVisible()) {
           await searchInput.fill('tech review');
           await searchInput.press('Enter');
@@ -311,24 +372,18 @@ test.describe('Documentation Screenshots', () => {
             await page.waitForTimeout(2000);
           } catch { /* proceed with what we have */ }
         }
-        const channelBtn = page.locator('.overflow-x-auto button').first();
+        // Click the first channel link inside a video card (accent color)
+        const channelBtn = page.locator('main button.text-accent-400').first();
         if (await channelBtn.isVisible()) {
           await channelBtn.click();
           await page.waitForTimeout(8000);
-          await shotAllSchemes(page, 'channel-dive');
         }
+        await shotAllSchemes(page, 'channel-dive');
       });
 
       test('resources panel', async ({ page }) => {
         await selectChannel(page);
-        const resourcesToggle = page.locator('aside button', { hasText: 'Resources' }).first();
-        if (await resourcesToggle.isVisible()) {
-          await resourcesToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const searchBtn = page.locator('aside button', { hasText: 'Search' }).first();
-        await searchBtn.click();
-        await page.waitForTimeout(500);
+        await setView(page, 'resources-search');
         const searchInput = page.locator('input[placeholder*="Search"]').first();
         if (await searchInput.isVisible()) {
           await searchInput.fill('nature');
@@ -340,37 +395,13 @@ test.describe('Documentation Screenshots', () => {
 
       test('resources - library', async ({ page }) => {
         await selectChannel(page);
-        const resourcesToggle = page.locator('aside button', { hasText: 'Resources' }).first();
-        if (await resourcesToggle.isVisible()) {
-          await resourcesToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const libraryBtn = page.locator('aside button', { hasText: 'Library' }).first();
-        if (await libraryBtn.isVisible()) {
-          await libraryBtn.click();
-          await page.waitForTimeout(1000);
-        }
+        await setView(page, 'resources-library');
         await shotAllSchemes(page, 'resources-library');
       });
 
       test('resources - audio sections', async ({ page }) => {
         await selectChannel(page);
-        // Navigate to Audio > Create via sidebar
-        const resourcesToggle = page.locator('aside button', { hasText: 'Resources' }).first();
-        if (await resourcesToggle.isVisible()) {
-          await resourcesToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const audioToggle = page.locator('aside button', { hasText: 'Audio' }).first();
-        if (await audioToggle.isVisible()) {
-          await audioToggle.click();
-          await page.waitForTimeout(300);
-          const createBtn = page.locator('aside button', { hasText: 'Create' }).last();
-          if (await createBtn.isVisible()) {
-            await createBtn.click();
-            await page.waitForTimeout(1000);
-          }
-        }
+        await setView(page, 'audio-create');
         // Try to select the channel and script to show sections
         try {
           const channelCard = page.locator('main button', { hasText: CHANNEL_NAME }).first();
@@ -397,85 +428,55 @@ test.describe('Documentation Screenshots', () => {
 
       test('settings panel - overview', async ({ page }) => {
         await selectChannel(page);
-        const gear = page.locator('[title="Channel settings"]').first();
-        if (await gear.isVisible()) {
-          await gear.click();
-          await page.waitForTimeout(800);
-          await shotAllSchemes(page, 'settings-panel');
-        }
+        await setView(page, 'settings');
+        await shotAllSchemes(page, 'settings-panel');
       });
 
       test('settings panel - mcp servers', async ({ page }) => {
         await selectChannel(page);
-        const gear = page.locator('[title="Channel settings"]').first();
-        if (await gear.isVisible()) {
-          await gear.click();
-          await page.waitForTimeout(800);
-          await page.evaluate(() => {
-            const el = document.querySelector('main');
-            if (el) el.scrollTop = el.scrollHeight * 0.7;
-          });
-          await page.waitForTimeout(500);
-          await shotAllSchemes(page, 'mcp-servers');
-        }
+        await setView(page, 'settings');
+        await page.evaluate(() => {
+          const el = document.querySelector('main');
+          if (el) el.scrollTop = el.scrollHeight * 0.7;
+        });
+        await page.waitForTimeout(500);
+        await shotAllSchemes(page, 'mcp-servers');
       });
 
       test('settings panel - voice picker', async ({ page }) => {
         await selectChannel(page);
-        const gear = page.locator('[title="Channel settings"]').first();
-        if (await gear.isVisible()) {
-          await gear.click();
-          await page.waitForTimeout(800);
-          await page.evaluate(() => {
-            const el = document.querySelector('main');
-            if (el) el.scrollTop = el.scrollHeight * 0.4;
-          });
-          await page.waitForTimeout(300);
-          await shotAllSchemes(page, 'voice-picker');
-        }
+        await setView(page, 'settings');
+        await page.evaluate(() => {
+          const el = document.querySelector('main');
+          if (el) el.scrollTop = el.scrollHeight * 0.4;
+        });
+        await page.waitForTimeout(300);
+        await shotAllSchemes(page, 'voice-picker');
       });
 
       test('settings panel - ollama models', async ({ page }) => {
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(1500);
         await selectChannel(page);
-        const gear = page.locator('[title="Channel settings"]').first();
-        if (await gear.isVisible()) {
-          await gear.click();
-          await page.waitForTimeout(1500);
-          await page.evaluate(() => {
-            const headings = Array.from(document.querySelectorAll('h3'));
-            const ollamaH3 = headings.find(h => h.textContent?.includes('Local AI'));
-            if (ollamaH3) {
-              ollamaH3.scrollIntoView({ block: 'start', behavior: 'instant' });
-            } else {
-              const el = document.querySelector('main');
-              if (el) el.scrollTop = el.scrollHeight * 0.85;
-            }
-          });
-          await page.waitForTimeout(500);
-          await shotAllSchemes(page, 'ollama-models');
-        }
+        await setView(page, 'settings');
+        await page.evaluate(() => {
+          const headings = Array.from(document.querySelectorAll('h3'));
+          const ollamaH3 = headings.find(h => h.textContent?.includes('Local AI'));
+          if (ollamaH3) {
+            ollamaH3.scrollIntoView({ block: 'start', behavior: 'instant' });
+          } else {
+            const el = document.querySelector('main');
+            if (el) el.scrollTop = el.scrollHeight * 0.85;
+          }
+        });
+        await page.waitForTimeout(500);
+        await shotAllSchemes(page, 'ollama-models');
       });
 
       test('image generate panel', async ({ page }) => {
         test.setTimeout(120000);
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(1500);
         await selectChannel(page);
-        const resourcesToggle = page.locator('aside button', { hasText: 'Resources' }).first();
-        if (await resourcesToggle.isVisible()) {
-          await resourcesToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const imagesToggle = page.locator('aside button', { hasText: 'Images' }).first();
-        if (await imagesToggle.isVisible()) {
-          await imagesToggle.click();
-          await page.waitForTimeout(300);
-          const genBtn = page.locator('aside button', { hasText: 'Generate' }).first();
-          if (await genBtn.isVisible()) {
-            await genBtn.click();
-            await page.waitForTimeout(1500);
-          }
-        }
+        await setView(page, 'image-generate');
         // Fill in a prompt for a nicer screenshot
         const promptArea = page.locator('main textarea').first();
         if (await promptArea.isVisible()) {
@@ -500,23 +501,9 @@ test.describe('Documentation Screenshots', () => {
 
       test('music generate panel', async ({ page }) => {
         test.setTimeout(180000);
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(1500);
         await selectChannel(page);
-        const resourcesToggle = page.locator('aside button', { hasText: 'Resources' }).first();
-        if (await resourcesToggle.isVisible()) {
-          await resourcesToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const audioToggle = page.locator('aside button', { hasText: 'Audio' }).first();
-        if (await audioToggle.isVisible()) {
-          await audioToggle.click();
-          await page.waitForTimeout(300);
-          const musicBtn = page.locator('aside button', { hasText: 'Generate Music' }).first();
-          if (await musicBtn.isVisible()) {
-            await musicBtn.click();
-            await page.waitForTimeout(1500);
-          }
-        }
+        await setView(page, 'audio-music');
         // Fill in a dummy prompt and generate — scope to main content area (not sidebar)
         const main = page.locator('main, [class*="flex-1"]').last();
         const promptArea = main.locator('textarea').first();
@@ -540,23 +527,9 @@ test.describe('Documentation Screenshots', () => {
       });
 
       test('voice train panel', async ({ page }) => {
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(1500);
         await selectChannel(page);
-        const resourcesToggle = page.locator('aside button', { hasText: 'Resources' }).first();
-        if (await resourcesToggle.isVisible()) {
-          await resourcesToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const audioToggle = page.locator('aside button', { hasText: 'Audio' }).first();
-        if (await audioToggle.isVisible()) {
-          await audioToggle.click();
-          await page.waitForTimeout(300);
-          const trainBtn = page.locator('aside button', { hasText: 'Train Voice' }).first();
-          if (await trainBtn.isVisible()) {
-            await trainBtn.click();
-            await page.waitForTimeout(1500);
-          }
-        }
+        await setView(page, 'audio-train');
         await shotAllSchemes(page, 'voice-train');
       });
 
@@ -582,36 +555,13 @@ test.describe('Documentation Screenshots', () => {
         });
 
         await selectChannel(page);
-        // Proposals is under the channel sub-nav or Produce section
-        const episodesBtn = page.locator('aside button', { hasText: 'Episodes' }).first();
-        if (await episodesBtn.isVisible()) {
-          // Channel sub-nav visible — Proposals should be in Produce section
-        }
-        const produceToggle = page.locator('aside button', { hasText: 'Produce' }).first();
-        if (await produceToggle.isVisible()) {
-          await produceToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const proposalsBtn = page.locator('aside button', { hasText: 'Proposals' }).first();
-        if (await proposalsBtn.isVisible()) {
-          await proposalsBtn.click();
-          await page.waitForTimeout(1000);
-        }
+        await setView(page, 'proposals');
         await shotAllSchemes(page, 'proposals-panel');
       });
 
       test('jobs panel', async ({ page }) => {
-        // Open Produce section, then click Jobs
-        const produceToggle = page.locator('aside button', { hasText: 'Produce' }).first();
-        if (await produceToggle.isVisible()) {
-          await produceToggle.click();
-          await page.waitForTimeout(300);
-        }
-        const jobsBtn = page.locator('aside button', { hasText: 'Jobs' }).first();
-        if (await jobsBtn.isVisible()) {
-          await jobsBtn.click();
-          await page.waitForTimeout(1000);
-        }
+        await selectChannel(page);
+        await setView(page, 'jobs');
         await shotAllSchemes(page, 'jobs-panel');
       });
 
@@ -639,12 +589,8 @@ test.describe('Documentation Screenshots', () => {
         });
 
         await selectChannel(page);
-        await page.waitForTimeout(500);
-        const episodesBtn = page.locator('aside button', { hasText: 'Episodes' }).first();
-        if (await episodesBtn.isVisible()) {
-          await episodesBtn.click();
-          await page.waitForTimeout(1000);
-        }
+        await setView(page, 'episodes');
+        await page.waitForTimeout(1000);
         await shotAllSchemes(page, 'episodes-panel');
       });
 
@@ -675,72 +621,65 @@ test.describe('Documentation Screenshots', () => {
         });
 
         await selectChannel(page);
-        await page.waitForTimeout(500);
-        const episodesBtn = page.locator('aside button', { hasText: 'Episodes' }).first();
-        if (await episodesBtn.isVisible()) {
-          await episodesBtn.click();
+        await setView(page, 'episodes');
+        await page.waitForTimeout(1000);
+        // Click the first episode card to open detail
+        const card = page.locator('button', { hasText: 'Quantum Error Correction' }).first();
+        if (await card.isVisible()) {
+          await card.click();
           await page.waitForTimeout(500);
-          // Click the first episode card to open detail
-          const card = page.locator('button', { hasText: 'Quantum Error Correction' }).first();
-          if (await card.isVisible()) {
-            await card.click();
-            await page.waitForTimeout(500);
-            // Expand the storyboard artifact viewer
-            const chevron = page.locator('button[title="View artifact"]').first();
-            if (await chevron.isVisible()) await chevron.click();
-            await page.waitForTimeout(500);
-          }
+          // Expand the storyboard artifact viewer
+          const chevron = page.locator('button[title="View artifact"]').first();
+          if (await chevron.isVisible()) await chevron.click();
+          await page.waitForTimeout(500);
         }
         await shotAllSchemes(page, 'episode-detail');
       });
 
       test('pipeline config in settings', async ({ page }) => {
         await selectChannel(page);
-        const settingsBtn = page.locator('aside button, aside a', { hasText: 'Settings' }).first();
-        if (await settingsBtn.isVisible()) {
-          await settingsBtn.click();
-          await page.waitForTimeout(500);
-          // Scroll to Pipeline Configuration section
-          const pipelineSection = page.locator('h3', { hasText: 'Pipeline Configuration' }).first();
-          if (await pipelineSection.isVisible()) {
-            await pipelineSection.scrollIntoViewIfNeeded();
-            await page.waitForTimeout(300);
-          }
+        await selectChannel(page);
+        await setView(page, 'settings');
+        // Scroll to Pipeline Configuration section
+        const pipelineSection = page.locator('h3', { hasText: 'Pipeline Configuration' }).first();
+        if (await pipelineSection.isVisible()) {
+          await pipelineSection.scrollIntoViewIfNeeded();
+          await page.waitForTimeout(300);
         }
         await shotAllSchemes(page, 'pipeline-config');
       });
 
       test('create channel form', async ({ page }) => {
-        const addBtn = page.locator('button', { hasText: 'Add Channel' }).first();
-        if (await addBtn.isVisible()) {
-          await addBtn.click();
-          await page.waitForTimeout(500);
-          await shotAllSchemes(page, 'create-channel');
+        // Open the channel pill dropdown and click "New channel"
+        const pill = page.locator('header button:has(> div.rounded-full)').first();
+        if (await pill.isVisible()) {
+          await pill.click();
+          await page.waitForTimeout(300);
+          const newBtn = page.locator('header button', { hasText: /new channel/i }).first();
+          if (await newBtn.isVisible()) {
+            await newBtn.click();
+            await page.waitForTimeout(500);
+            await shotAllSchemes(page, 'create-channel');
+          }
         }
       });
 
       test('profile popover', async ({ page }) => {
-        // Click the user avatar / profile button in sidebar footer
-        const avatar = page.locator('aside button[class*="avatar"], aside [class*="user"] button, aside button:has(img[alt*="avatar"])').first();
-        const profileBtn = avatar.isVisible()
-          ? avatar
-          : page.locator('aside button', { hasText: /dev|alex|profile/i }).first();
-        if (await profileBtn.isVisible()) {
-          await profileBtn.click();
-          await page.waitForTimeout(800);
+        // Avatar button lives in the top-right of the header
+        const avatar = page.locator('header button.bg-accent-500').first();
+        if (await avatar.isVisible()) {
+          await avatar.click();
+          await page.waitForTimeout(500);
           await shotAllSchemes(page, 'profile-popover');
         }
       });
 
       test('password change form', async ({ page }) => {
-        // Open profile popover, then expand password change
-        const profileBtn = page.locator('aside button', { hasText: /dev|alex|profile/i }).first();
-        const avatar = page.locator('aside button[class*="avatar"], aside [class*="user"] button').first();
-        const trigger = (await avatar.isVisible()) ? avatar : profileBtn;
-        if (await trigger.isVisible()) {
-          await trigger.click();
-          await page.waitForTimeout(800);
-          const passwordBtn = page.locator('button', { hasText: 'Password' }).first();
+        const avatar = page.locator('header button.bg-accent-500').first();
+        if (await avatar.isVisible()) {
+          await avatar.click();
+          await page.waitForTimeout(500);
+          const passwordBtn = page.locator('button', { hasText: /change password/i }).first();
           if (await passwordBtn.isVisible()) {
             await passwordBtn.click();
             await page.waitForTimeout(500);
@@ -749,12 +688,14 @@ test.describe('Documentation Screenshots', () => {
         }
       });
 
-      test('settings nav in sidebar', async ({ page }) => {
+      test('settings nav — channel pill dropdown', async ({ page }) => {
         await selectChannel(page);
-        await page.waitForTimeout(500);
-        // Settings should appear as a nav item under the channel
-        const settingsNav = page.locator('aside button', { hasText: 'Settings' }).first();
-        if (await settingsNav.isVisible()) {
+        await page.waitForTimeout(400);
+        // Open the channel pill dropdown so Settings/Proposals/Jobs items are visible
+        const pill = page.locator('header button:has(> div.rounded-full)').first();
+        if (await pill.isVisible()) {
+          await pill.click();
+          await page.waitForTimeout(300);
           await shotAllSchemes(page, 'settings-nav');
         }
       });
@@ -778,20 +719,98 @@ test.describe('Documentation Screenshots', () => {
         });
 
         await selectChannel(page);
-        await clickChannelNav(page, 'Ideas');
+        await setView(page, 'ideas');
         await page.waitForTimeout(500);
-        // Open the generate form to reveal the model selector
-        const genBtn = page.locator('button:has(svg)', { hasText: 'Generate' }).first();
-        if (await genBtn.isVisible()) {
-          await genBtn.click();
-          await page.waitForTimeout(500);
-        }
-        // Open the model select dropdown
-        const modelSelect = page.locator('select[class*="model"], [class*="ModelSelect"] select, [class*="model-select"]').first();
+        // Open the model select dropdown in the new ModelSelect
+        const modelSelect = page.locator('main select').first();
         if (await modelSelect.isVisible()) {
           await modelSelect.click();
           await page.waitForTimeout(300);
           await shotAllSchemes(page, 'ollama-model-select');
         }
+      });
+
+      // ── New views added for the Flow redesign ────────────────────────
+
+      test('top chrome — landing with stage rail', async ({ page }) => {
+        // Visit landing without selecting a channel; header shows pill + stage rail
+        await page.evaluate(() => {
+          const store = (window as any).__craftStore;
+          if (store) store.setState({ selectedChannelId: null, activeView: 'ideas' });
+        });
+        await page.waitForTimeout(500);
+        await shotAllSchemes(page, 'top-chrome');
+      });
+
+      test('command palette — ⌘K overlay', async ({ page }) => {
+        await selectChannel(page);
+        await page.waitForTimeout(400);
+        // Trigger via the custom event to avoid OS-specific key combos
+        await page.evaluate(() => document.dispatchEvent(new CustomEvent('craft:cmdk')));
+        await page.waitForTimeout(400);
+        await shotAllSchemes(page, 'command-palette');
+      });
+
+      test('marketplace — browse', async ({ page }) => {
+        await selectChannel(page);
+        await setView(page, 'marketplace');
+        await page.waitForTimeout(800);
+        await shotAllSchemes(page, 'marketplace-browse');
+      });
+
+      test('marketplace — my studio', async ({ page }) => {
+        await selectChannel(page);
+        await setView(page, 'marketplace');
+        await page.waitForTimeout(400);
+        // Click "My studio" sub-tab in the marketplace chrome
+        const studioTab = page.locator('button', { hasText: /^\s*My studio\s*$/i }).first();
+        if (await studioTab.isVisible()) {
+          await studioTab.click();
+          await page.waitForTimeout(600);
+        }
+        await shotAllSchemes(page, 'marketplace-studio');
+      });
+
+      test('storyboard editor', async ({ page }) => {
+        // Mock episode + script preview-sections endpoints so the editor populates
+        await page.route(`**/api/channels/*/episodes/*`, async (route: any, request: any) => {
+          if (request.method() === 'GET') {
+            await route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify({
+                episode: {
+                  id: 'ep-quantum-error',
+                  title: 'Quantum Error Correction Explained',
+                  channelId: dummyChannelId,
+                  scriptId: null, // force script-picker to reveal the dropdown
+                  pipeline: { storyboard: { status: 'in_progress' } },
+                },
+                artifacts: {},
+              }),
+            });
+          } else {
+            await route.continue();
+          }
+        });
+
+        await selectChannel(page);
+        // Set both openEpisodeId and activeView in one go
+        await page.evaluate(() => {
+          const store = (window as any).__craftStore;
+          if (store) store.setState({ openEpisodeId: 'ep-quantum-error', activeView: 'storyboard' });
+        });
+        await page.waitForTimeout(1200);
+        // Pick the first script from the dropdown so the 3-col layout renders
+        const select = page.locator('main select').first();
+        if (await select.isVisible()) {
+          const opts = await select.locator('option').allTextContents();
+          const scriptOpt = opts.find(o => o && !o.startsWith('—') && !o.startsWith('No scripts'));
+          if (scriptOpt) {
+            await select.selectOption({ label: scriptOpt });
+            await page.waitForTimeout(1500);
+          }
+        }
+        await shotAllSchemes(page, 'storyboard-editor');
       });
 });

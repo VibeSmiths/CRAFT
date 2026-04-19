@@ -12,7 +12,7 @@ Frontend ──SSE──> Express API ──NATS──> Worker Pool
                   Redis Cache        Result / Error
 ```
 
-Jobs appear **under channels** in the sidebar (not as a standalone section). Use the `?channelId=` query parameter on `GET /api/jobs` to filter jobs by channel.
+Jobs are **channel-scoped** — open them from the **channel pill dropdown** → **Jobs** in the top chrome (visible only to premium users). The `?channelId=` query parameter on `GET /api/jobs` filters jobs by channel.
 
 ## Workers
 

@@ -2,38 +2,84 @@
 
 The Script Editor is where ideas become content. AI writes, revises, and polishes scripts in your character's voice, with fact-checking and humanization tools.
 
-## Script Editor
+<SchemeImage name="script-editor" alt="Script Editor — three-column Flow layout" />
 
-Click any script to open the editor. The toolbar provides:
+## Layout
 
-<SchemeImage name="script-editor" alt="Script Editor" />
+The editor is a three-column grid:
 
-### AI Writing
+- **Left — script list rail.** Every script in the channel, one row each with title, status badge (draft / review / final), and word count. Click to jump between scripts — unsaved work is committed first.
+- **Centre — editor.** Sticky toolbar at the top, a giant serif title input, then the script body (JetBrains Mono, 15px). Stage directions and dialog render inline. Fact-check highlights overlay the text when a check is active.
+- **Right — AI copilot rail.** Four tabs — **Revise**, **Facts**, **Humanize**, **Pacing** — plus a **Pipeline Spine** at the bottom that shows where this script sits in the Idea → Script → Audio → Episode → Publish arc.
 
-| Button | What It Does |
+## Toolbar
+
+The sticky toolbar at the top of the editor holds:
+
+- **Status badge** — draft / review / final, colour-coded
+- **Type badge** — short or long
+- **Word count** — spoken words only, with a progress bar toward the target (150 for Shorts, 1500 for Long-form)
+- **Auto-save indicator** — `saving…` / `unsaved` / `auto-saved · 14s`
+- **Status dropdown** — promote draft → review → final
+- **Fact check / Humanize** buttons
+- **Send to audio** (on review/final) or **Promote & send** (from draft — sets status to review and jumps straight to the Audio room)
+- **Save*** button when there are unsaved changes
+
+## AI writing — the Revise tab
+
+The **Revise** tab in the right rail holds all generation controls:
+
+| Button | What it does |
 |--------|-------------|
-| **Write with Voice** | Generates a full script from the title and any existing content |
-| **Revise** | Opens a prompt input — type what to change, then submit |
-| **Polish** | Fixes awkward phrasing, ensures consistent voice, improves the ending |
+| **Write with voice** | Generates a full script in your channel's character voice from the title and any existing content |
+| **Revise** | Expands a textarea — type what to change ("make the intro punchier", "add more technical detail"), press **Go** |
 
-::: tip Revise with Instructions
-Click **Revise** to open an inline text field. Type specific instructions like "make the intro punchier" or "add more technical detail" then press Enter.
+Under those is a **Related** section with a shortcut to open the [Resource Search](/guide/resources) panel for adding reference material.
+
+::: tip Shorts get special treatment
+Scripts marked **Short** are generated with a seamless loop — the last sentence trails off incomplete and the first sentence completes it, so the video loops cleanly. No hashtags in the content (they're extracted to tags automatically).
 :::
 
-### YouTube Shorts
+## Fact check
 
-Scripts marked as **Short** get special AI treatment:
-- Loop structure — the last sentence trails off incomplete, completed by the first sentence on replay
-- ~150 word target
-- No hashtags in content (extracted to tags automatically)
+<SchemeImage name="fact-check" alt="Fact Check Panel" />
 
-### Model Selection
+Click **Fact check** in the toolbar. The Facts tab lights up in the right rail and the editor body gets inline highlights that follow the classification:
 
-The model dropdown lets you choose between Claude and Gemini models. Each has different strengths — Claude (especially Opus) may use MCP research tools, while Gemini streams faster.
+- **Verified** (green) — confirmed accurate
+- **Unverified** (amber) — plausible but not confirmed
+- **Disputed** (red) — contradicts known facts
+- **Opinion** (blue) — subjective, not a factual claim
 
-## Status Workflow
+Click any claim in the Facts panel to jump the editor cursor to that passage. Claims that don't match any text in the script appear under **Summary claims** — they're the AI's higher-level observations.
 
-Scripts progress through three statuses:
+## Humanize
+
+Click **Humanize** in the toolbar. The Humanize tab shows each detected passage:
+
+- **Fixed** (green) — auto-rewritten; shows original with strikethrough + rewrite in info-blue
+- **Flagged** (amber) — needs manual judgment
+
+Use **Apply all fixes** for a wholesale rewrite, or **Apply this fix** on a single passage. Click any passage header to jump into the editor at that line.
+
+## Pacing tab
+
+Switch to **Pacing** for a read-only breakdown:
+
+- Large serif word count vs. target with a progress bar
+- Estimated read time at 150 wpm
+- Structure — paragraphs, stage directions, average words per paragraph
+- Section sizes — one bar per paragraph, longest normalised
+
+Useful for spotting pacing problems (e.g. a 400-word dump that needs splitting, or a dozen 20-word graphs that read like twitter).
+
+## Pipeline Spine
+
+The bottom of the AI rail shows the five-step arc: `Idea → Script [here] → Audio → Episode → Publish`. It tells you at a glance what's upstream (what the script was derived from) and what's unblocked for the next stage (e.g. Audio lights up once status is review/final).
+
+## Status workflow
+
+Scripts progress through three statuses via the dropdown in the toolbar:
 
 | Status | Meaning | Audio |
 |--------|---------|-------|
@@ -41,37 +87,8 @@ Scripts progress through three statuses:
 | **Review** | Ready for review | Allowed |
 | **Final** | Production ready | Allowed |
 
-Change status via the dropdown in the editor toolbar.
+The **Storyboard** editor under Episodes prefers review/final scripts too — once the script's there, the storyboard row on the episode lights up an **Open editor** action. See [Storyboard](/guide/storyboard).
 
-## Fact Check
+## Auto-save
 
-Click **Fact Check** to scan the script for factual claims:
-
-<SchemeImage name="fact-check" alt="Fact Check Panel" />
-
-- **Verified** (green) — confirmed accurate
-- **Unverified** (amber) — plausible but not confirmed
-- **Disputed** (red) — contradicts known facts
-- **Opinion** (blue) — subjective, not a factual claim
-
-Click any claim to **jump to that text** in the editor.
-
-## Humanize
-
-Click **Humanize** to detect and rewrite AI-sounding passages:
-
-- **Fixed** (green) — auto-rewritten with strikethrough original and cyan replacement
-- **Flagged** (amber) — needs manual attention
-
-Actions:
-- **Apply All Fixes** — replaces entire script with humanized version
-- **Apply this fix** — replaces individual passage
-- Click to jump to the passage in the editor
-
-## Word Count
-
-The word counter shows spoken words only — stage directions like `*(walks to camera)*`, `*[leans in]*`, and `[CUT TO]` are excluded. The progress bar fills based on the target (150 for Shorts, 1500 for Long).
-
-## Auto-Save
-
-Scripts auto-save every 30 seconds when modified. The Save button shows `Save*` when there are unsaved changes.
+Scripts auto-save every 30 seconds when modified. The indicator in the toolbar shows `unsaved` when there are pending edits and counts up seconds since the last save when clean.
