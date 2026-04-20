@@ -81,6 +81,26 @@ Thanks for watching! Hit subscribe if you want to stay ahead of the curve. See y
 
 let dummyChannelId: string | null = null;
 
+/** Synthetic channel used when beforeAll fails to create one (which can happen
+ * if the backend state isn't exactly what we expect). Keeps every
+ * channel-dependent test from silently rendering "Select a channel". */
+const SYNTHETIC_CHANNEL_ID = 'screenshot-dummy';
+const SYNTHETIC_CHANNEL = {
+  id: SYNTHETIC_CHANNEL_ID,
+  name: CHANNEL_NAME,
+  character: CHARACTER_NAME,
+  character_description: 'A tech enthusiast who breaks down complex topics with humor and clarity.',
+  voice: null,
+  topics: ['quantum computing', 'programming', 'open source', 'linux', 'cybersecurity'],
+  tags: ['tech', 'science', 'tutorial'],
+  avatar: null,
+  rpm: 4,
+  color: null,
+  created: new Date().toISOString(),
+  updated: new Date().toISOString(),
+};
+function effectiveChannelId(): string { return dummyChannelId ?? SYNTHETIC_CHANNEL_ID; }
+
 const AUTH_HEADERS: Record<string, string> = {
   'Content-Type': 'application/json',
   'X-Auth-Request-User': 'localdev',
@@ -120,12 +140,19 @@ async function apiDelete(path: string) {
 // Zustand store for views not on the chrome.
 
 async function selectChannel(page: Page) {
-  if (!dummyChannelId) return;
-  // Fastest + most stable: go through the store directly.
-  await page.evaluate((id) => {
+  const id = effectiveChannelId();
+  const synthetic = { ...SYNTHETIC_CHANNEL, id };
+  // Poke channels[] directly too — mockChannelList populates the backend
+  // response, but in some flows the store is loaded eagerly with a stale
+  // empty list before the mock settles. This forces state consistency.
+  await page.evaluate(({ id, synthetic }) => {
     const store = (window as any).__craftStore;
-    if (store) store.setState({ selectedChannelId: id });
-  }, dummyChannelId);
+    if (!store) return;
+    const existing = store.getState?.().channels ?? [];
+    const hasIt = existing.some((c: any) => c.id === id);
+    const channels = hasIt ? existing : [synthetic, ...existing];
+    store.setState({ selectedChannelId: id, channels });
+  }, { id, synthetic });
   await page.waitForTimeout(400);
 }
 
@@ -189,14 +216,265 @@ async function clickGlobalNav(page: Page, label: string) {
   await clickStageRail(page, label);
 }
 
-// Intercept channel list to show only the dummy channel
+// ── Per-feature mocks (used by discover / ideas / audio tests so screenshots
+//     don't depend on flaky backends or missing Ollama models) ─────────────
+
+async function mockDiscover(page: Page) {
+  // Fake videos + channels for /api/youtube/discover
+  const videos = Array.from({ length: 8 }, (_, i) => ({
+    id: `vid-${i}`,
+    title: [
+      'Quantum Computing, Explained in 10 Minutes',
+      'Why I Stopped Using Docker (and what I use now)',
+      'Rust is Faster Than C — Here\'s the Benchmark',
+      'The Real Reason Your SSD is Slow',
+      'A Linux Desktop That Actually Works in 2026',
+      'Every Programmer Should Know This Algorithm',
+      'I Built a Home Server for $47 — Here\'s How',
+      'ChatGPT Can\'t Do This One Simple Task',
+    ][i],
+    channelId: `ch-${i}`,
+    channelTitle: ['Quantum Weekly','Terminal Thoughts','Rust Dispatch','PixelForge','Linux Afternoon','AlgorithmsAreCool','TinyServer','AI Sceptic'][i],
+    description: 'A deep, approachable dive with code examples, diagrams, and zero fluff.',
+    thumbnail: `https://i.ytimg.com/vi/vid-${i}/mqdefault.jpg`,
+    viewCount: ['240000','58000','812000','94000','1400000','320000','410000','78000'][i],
+    publishedAt: new Date(Date.now() - (i + 1) * 86400_000 * 3).toISOString(),
+    url: `https://www.youtube.com/watch?v=vid-${i}`,
+    duration: [624, 1820, 941, 512, 2240, 1320, 720, 865][i],
+    likeCount: ['18000','5200','92000','8200','140000','40000','35000','6900'][i],
+    commentCount: ['1120','430','6100','760','8900','2900','3100','530'][i],
+    vph: [420, 180, 950, 260, 1820, 540, 700, 200][i],
+    isShort: false,
+  }));
+  const channels: Record<string, unknown> = {};
+  for (let i = 0; i < 8; i++) {
+    channels[`ch-${i}`] = {
+      id: `ch-${i}`,
+      name: videos[i].channelTitle,
+      thumbnail: '',
+      subscriberCount: ['48000','12000','210000','30000','940000','85000','120000','22000'][i],
+      totalViews: ['3200000','420000','18000000','1100000','140000000','5900000','8400000','920000'][i],
+      videoCount: ['210','54','320','97','610','180','240','68'][i],
+      createdAt: new Date(Date.now() - (i + 3) * 365 * 86400_000).toISOString(),
+    };
+  }
+  await page.route('**/api/youtube/discover*', async (route: any) => {
+    await route.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify({ videos, channels, hasApiKey: true, exhausted: false }) });
+  });
+  // Channel deep dive
+  await page.route('**/api/youtube/channel/*', async (route: any) => {
+    const url = new URL(route.request().url());
+    const channelId = url.pathname.split('/').pop() || 'ch-0';
+    const recent = videos.slice(0, 12).map((v, i) => ({ ...v, channelId, id: `vid-${channelId}-${i}` }));
+    await route.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify({
+        channel: channels[channelId] ?? channels['ch-0'],
+        recentVideos: recent,
+        avgViews: 420_000,
+        uploadFrequency: '2.4 videos / week',
+        hasApiKey: true,
+        analytics: {
+          channelAgeDays: 1280, channelAgeYears: 3.5,
+          subsPerDay: 22, avgEngagementRate: 0.038,
+          shortsCount: 42, longsCount: 168, shortsRatio: 0.2,
+          monetizationEligible: true, videosLast30Days: 8,
+          estimatedMonthlyViews: 1_800_000,
+        },
+      }),
+    });
+  });
+}
+
+async function mockAiIdeas(page: Page) {
+  await page.route('**/api/ai/ideas', async (route: any) => {
+    await route.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify([
+        { title: 'Why the M5 Pro Changed Laptop Benchmarks Forever', hook: 'It\'s not the chip — it\'s the memory.', angle: 'Bench-heavy with side-by-side latency graphs.', tags: ['apple','hardware','benchmarks'], generatedByModel: 'qwen2.5:7b' },
+        { title: 'The Quietest Tech Revolution: File Systems', hook: 'Nobody noticed btrfs grew up.', angle: 'Casual explainer; show disk-layout diagrams.', tags: ['linux','filesystems','deep-dive'], generatedByModel: 'qwen2.5:7b' },
+        { title: 'I Stopped Writing Tests for a Month. Here\'s What Broke.', hook: 'Spoiler: more than I expected, less than I feared.', angle: 'Personal, numbered findings.', tags: ['testing','engineering'], generatedByModel: 'qwen2.5:7b' },
+        { title: 'Every Keyboard Shortcut I Actually Use, Ranked by Usage', hook: 'I tracked them for 30 days.', angle: 'Surprising list from a heatmap dashboard.', tags: ['productivity','keyboards'], generatedByModel: 'qwen2.5:7b' },
+        { title: 'Why 90% of DIY Home Servers Die in Year 2', hook: 'Your NUC is a ticking UPS bomb.', angle: 'Field-report style; failure mode by root cause.', tags: ['homelab','self-hosting','reliability'], generatedByModel: 'qwen2.5:7b' },
+      ]),
+    });
+  });
+}
+
+async function mockJobs(page: Page) {
+  const now = Date.now();
+  const jobs = [
+    {
+      id: 'job-1776607046-abc1',
+      type: 'orchestrate',
+      channelId: effectiveChannelId(),
+      episodeId: 'ep-quantum-error',
+      status: 'running',
+      via: 'nats',
+      startedAt: new Date(now - 4 * 60_000).toISOString(),
+      output: ['[orchestrate] Stage: script — iteration 1/3', '[orchestrate] Agent running (qwen2.5:7b)'],
+    },
+    {
+      id: 'job-1776606885-def2',
+      type: 'proposal-generate',
+      channelId: effectiveChannelId(),
+      status: 'completed',
+      via: 'nats',
+      startedAt: new Date(now - 22 * 60_000).toISOString(),
+      finishedAt: new Date(now - 20 * 60_000).toISOString(),
+      durationMs: 118_000,
+      output: ['[proposals] Generated 5 proposals (avg score 81/100)'],
+    },
+    {
+      id: 'job-1776606720-ghi3',
+      type: 'highlight-pick',
+      channelId: effectiveChannelId(),
+      episodeId: 'ep-quantum-error',
+      status: 'completed',
+      via: 'nats',
+      startedAt: new Date(now - 48 * 60_000).toISOString(),
+      finishedAt: new Date(now - 47 * 60_000).toISOString(),
+      durationMs: 13_000,
+      output: ['[highlight-pick] Picked 4 candidates (ytshorts: 2, tiktok: 1, x-clip: 1)'],
+    },
+    {
+      id: 'job-1776606512-jkl4',
+      type: 'render',
+      channelId: effectiveChannelId(),
+      episodeId: 'ep-quantum-error',
+      status: 'completed',
+      via: 'nats',
+      startedAt: new Date(now - 90 * 60_000).toISOString(),
+      finishedAt: new Date(now - 88 * 60_000).toISOString(),
+      durationMs: 132_000,
+      output: ['[composition-render] Remotion slice rendered (298s)', '[composition-render] ffmpeg compose complete → final.mp4 (48.3 MB)'],
+    },
+    {
+      id: 'job-1776606305-mno5',
+      type: 'upload-youtube',
+      channelId: effectiveChannelId(),
+      episodeId: 'ep-linux-gaming',
+      status: 'failed',
+      via: 'nats',
+      error: 'YouTube API: The request cannot be completed because you have exceeded your quota.',
+      startedAt: new Date(now - 155 * 60_000).toISOString(),
+      finishedAt: new Date(now - 154 * 60_000).toISOString(),
+      durationMs: 62_000,
+      output: ['[upload-youtube] Resumable session initialized', '[upload-youtube] ERROR: quota exceeded'],
+    },
+    {
+      id: 'job-1776605988-pqr6',
+      type: 'tts-generate',
+      channelId: effectiveChannelId(),
+      status: 'completed',
+      via: 'nats',
+      startedAt: new Date(now - 3 * 3600_000).toISOString(),
+      finishedAt: new Date(now - 3 * 3600_000 + 240_000).toISOString(),
+      durationMs: 240_000,
+      output: ['[tts] Completed: 12/12 sections'],
+    },
+  ];
+  await page.route('**/api/jobs*', async (route: any, request: any) => {
+    if (request.method() === 'GET') {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(jobs) });
+    } else {
+      await route.continue();
+    }
+  });
+}
+
+async function mockAudioProject(page: Page) {
+  const projectId = 'audio-demo-proj';
+  const scriptId = 'script-demo-id';
+  // Ensure listScripts + getScript return our demo script so the user can pick it
+  await page.route(`**/api/channels/*/scripts`, async (route: any, request: any) => {
+    if (request.method() === 'GET') {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([{
+        id: scriptId, title: 'Why Quantum Computers Will Change Everything',
+        type: 'long', status: 'review', tags: ['quantum','tech'],
+        wordCount: 840, generatedByModel: 'qwen2.5:7b',
+        created: new Date().toISOString(), updated: new Date().toISOString(),
+      }]) });
+    } else {
+      await route.continue();
+    }
+  });
+  await page.route(`**/api/channels/*/scripts/${scriptId}`, async (route: any, request: any) => {
+    if (request.method() === 'GET') {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+        id: scriptId, title: 'Why Quantum Computers Will Change Everything',
+        type: 'long', status: 'review', tags: ['quantum','tech'],
+        wordCount: 840,
+        content: '## Cold open\n\n**TechExplorer:** Hey everyone...\n\n## The Qubit, Plain-English\n\nClassical bits are off or on...\n',
+        generatedByModel: 'qwen2.5:7b',
+        created: new Date().toISOString(), updated: new Date().toISOString(),
+      }) });
+    } else {
+      await route.continue();
+    }
+  });
+  // TTS services + voices so the voice picker doesn't error out
+  await page.route('**/api/tts/services', async (route: any) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
+      edge: true, openai: false, elevenlabs: false, openedai: false,
+    }) });
+  });
+  await page.route('**/api/tts/voices**', async (route: any) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([
+      { id: 'en-US-GuyNeural', name: 'Guy (US Male)', language: 'en-US', gender: 'male' },
+      { id: 'en-US-JennyNeural', name: 'Jenny (US Female)', language: 'en-US', gender: 'female' },
+    ]) });
+  });
+  const sections = [
+    { id: 's0', index: 0, title: 'Cold open', text: 'Hey everyone, today we\'re diving into quantum computers — and for once, I think the hype actually earns its keep.', delayAfter: 400, status: 'ready', audioFile: 'section-000.mp3', duration: 6.2 },
+    { id: 's1', index: 1, title: 'The Qubit, Plain-English', text: 'Classical bits are off or on. Qubits can be both, simultaneously — and that changes everything about how search scales.', delayAfter: 300, status: 'ready', audioFile: 'section-001.mp3', duration: 9.8 },
+    { id: 's2', index: 2, title: 'Real-world applications', text: 'Drug discovery. Cryptography — yes, including the one guarding your bank. Climate modeling, AI training. Not in ten years — in three.', delayAfter: 500, status: 'ready', audioFile: 'section-002.mp3', duration: 12.1 },
+    { id: 's3', index: 3, title: 'The speed-bump', text: 'But qubits are fragile. A stray magnetic field and the whole calculation collapses. That\'s why error correction is the real frontier.', delayAfter: 400, status: 'ready', audioFile: 'section-003.mp3', duration: 10.7 },
+    { id: 's4', index: 4, title: 'Call to action', text: 'If this made sense — hit subscribe. Next week: a live demo of Grover\'s algorithm solving a search faster than any classical machine can.', delayAfter: 0, status: 'ready', audioFile: 'section-004.mp3', duration: 8.9 },
+  ];
+  const project = {
+    id: projectId, channelId: effectiveChannelId(), scriptId,
+    scriptTitle: 'Why Quantum Computers Will Change Everything',
+    service: 'edge', voiceId: 'en-US-GuyNeural', voiceName: 'Guy (Edge)',
+    mergedFile: null, totalDuration: sections.reduce((a, s) => a + s.duration, 0),
+    status: 'ready', episodeId: null, backgroundTrack: null,
+    originalUpload: null, rvcModel: null,
+    sections,
+    created: new Date().toISOString(), updated: new Date().toISOString(),
+  };
+  await page.route('**/api/tts/projects*', async (route: any, request: any) => {
+    if (request.method() === 'GET') {
+      const url = request.url();
+      if (/\/projects\/[^?]+/.test(new URL(url).pathname)) {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(project) });
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([project]) });
+      }
+    } else {
+      await route.continue();
+    }
+  });
+}
+
+// Intercept channel list to show only the dummy channel (falls back to a
+// synthetic channel when beforeAll couldn't create one, so settings-family
+// tests don't silently render "Select a channel").
 async function mockChannelList(page: Page) {
   await page.route('**/api/channels', async (route: any, request: any) => {
     if (request.method() === 'GET') {
-      // Fetch real response, filter to only show our dummy channel
-      const resp = await route.fetch();
-      const channels = await resp.json();
-      const filtered = channels.filter((c: any) => c.id === dummyChannelId);
+      let filtered: any[] = [];
+      try {
+        const resp = await route.fetch();
+        const channels = await resp.json();
+        if (Array.isArray(channels) && dummyChannelId) {
+          filtered = channels.filter((c: any) => c.id === dummyChannelId);
+        }
+      } catch { /* fall through to synthetic */ }
+      if (filtered.length === 0) {
+        // Make the synthetic id match whatever effectiveChannelId() returns, so
+        // mockChannelList + selectChannel can't disagree if beforeAll left a
+        // stale dummyChannelId behind.
+        filtered = [{ ...SYNTHETIC_CHANNEL, id: effectiveChannelId() }];
+      }
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(filtered) });
     } else {
       await route.continue();
@@ -297,13 +575,14 @@ test.describe('Documentation Screenshots', () => {
       });
 
       test('ideas generate form', async ({ page }) => {
+        await mockAiIdeas(page);
         await selectChannel(page);
         await clickChannelNav(page, 'Ideas');
         await page.waitForTimeout(300);
         const genBtn = page.locator('button:has(svg)', { hasText: 'Generate' }).first();
         if (await genBtn.isVisible()) {
           await genBtn.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(1200);
         }
         await shotAllSchemes(page, 'ideas-generate');
       });
@@ -338,45 +617,36 @@ test.describe('Documentation Screenshots', () => {
       });
 
       test('discover panel', async ({ page }) => {
-        test.setTimeout(180000);
+        await mockDiscover(page);
         await selectChannel(page);
         await clickGlobalNav(page, 'Discover');
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(500);
         const searchInput = page.locator('input[placeholder*="Search YouTube"]').first();
         if (await searchInput.isVisible()) {
           await searchInput.fill('quantum computing explained');
           await searchInput.press('Enter');
-          // yt-dlp search can take 30-120s — wait generously
-          try {
-            await page.locator('text=/views/i').first().waitFor({ state: 'visible', timeout: 120000 });
-            await page.waitForTimeout(2000);
-          } catch {
-            // Take screenshot even with skeletons — better than failing
-          }
+          await page.locator('text=/views/i').first().waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+          await page.waitForTimeout(800);
         }
         await shotAllSchemes(page, 'discover-search');
       });
 
       test('discover - channel dive', async ({ page }) => {
-        test.setTimeout(180000);
+        await mockDiscover(page);
         await selectChannel(page);
         await clickGlobalNav(page, 'Discover');
-        await page.waitForTimeout(500);
-        // The left filter rail has a single search input at the top
+        await page.waitForTimeout(400);
         const searchInput = page.locator('aside input[type="text"], main input[type="text"]').first();
         if (await searchInput.isVisible()) {
           await searchInput.fill('tech review');
           await searchInput.press('Enter');
-          try {
-            await page.locator('text=/views/i').first().waitFor({ state: 'visible', timeout: 120000 });
-            await page.waitForTimeout(2000);
-          } catch { /* proceed with what we have */ }
+          await page.locator('text=/views/i').first().waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+          await page.waitForTimeout(600);
         }
-        // Click the first channel link inside a video card (accent color)
         const channelBtn = page.locator('main button.text-accent-400').first();
         if (await channelBtn.isVisible()) {
           await channelBtn.click();
-          await page.waitForTimeout(8000);
+          await page.waitForTimeout(1500);
         }
         await shotAllSchemes(page, 'channel-dive');
       });
@@ -560,8 +830,10 @@ test.describe('Documentation Screenshots', () => {
       });
 
       test('jobs panel', async ({ page }) => {
+        await mockJobs(page);
         await selectChannel(page);
         await setView(page, 'jobs');
+        await page.waitForTimeout(800);
         await shotAllSchemes(page, 'jobs-panel');
       });
 
@@ -1001,6 +1273,25 @@ test.describe('Documentation Screenshots', () => {
         if (await btn.isVisible()) await btn.click();
         await page.waitForTimeout(500);
         await shotAllSchemes(page, 'publish-accounts');
+      });
+
+      test('audio — re-record sections', async ({ page }) => {
+        await mockAudioProject(page);
+        await selectChannel(page);
+        await setView(page, 'audio-create');
+        await page.waitForTimeout(1200);
+        // Select the demo script in the header dropdown — that auto-opens the
+        // single matching project, revealing the per-section re-record view.
+        const scriptSelect = page.locator('main select').first();
+        if (await scriptSelect.isVisible({ timeout: 2000 }).catch(() => false)) {
+          const opts = await scriptSelect.locator('option').allTextContents();
+          const match = opts.find(o => /quantum/i.test(o));
+          if (match) {
+            await scriptSelect.selectOption({ label: match });
+            await page.waitForTimeout(1200);
+          }
+        }
+        await shotAllSchemes(page, 'audio-recordings');
       });
 
       test('settings — brand templates', async ({ page }) => {
