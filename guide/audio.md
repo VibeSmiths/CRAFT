@@ -2,7 +2,27 @@
 
 The Audio room generates speech from your scripts using text-to-speech, handles uploaded voiceovers with timestamp-based splitting, supports sound effect sections, and layers background music under the voice track. Reach it via **Audio** on the top-chrome stage rail, or from the Script editor with **Send to audio** / **Promote & send**.
 
-<SchemeImage name="audio-sections" alt="Audio room — tracks / section timeline / detail" />
+## Script breakdown (project setup)
+
+Pick a script in Review or Final status from the header dropdown. CRAFT parses it into sections and shows you the breakdown before you commit to a voice or mode:
+
+<SchemeImage name="audio-sections" alt="Script parsed into 5 sections before creating the project — pick AI Voice (TTS) or Upload mode, tune default pause, then Create" />
+
+Toggle between **AI Voice (TTS)** and **Upload Recording** at the top. The numbered list below the tabs is a live preview of the parsed sections — any row tagged `scene` is a stage direction that becomes scene context rather than spoken text. Adjust the default pause slider to set the silence between sections (per-section overrides come later in the editor).
+
+## Per-section editor (recording & re-record)
+
+Once the project exists the view flips into the 3-column editor. Every parsed beat gets its own row with a waveform, play/regenerate/upload controls, and a delay-after slider. Click any row to focus it in the right rail, where you can edit the text, attach resources, or remove the section entirely:
+
+<SchemeImage name="audio-recordings" alt="Per-section editor — 5 TTS sections with waveforms, status chips, and per-section regenerate/upload/record buttons; focused section detail in the right rail" />
+
+This is where you iterate. Common moves:
+
+- **Regenerate one section** — the loop-arrow icon on any row re-runs TTS with the current voice settings. Useful when a single beat comes out with bad pacing.
+- **Upload one section** — replace a single beat with a recorded take without retaking the whole script. Drop a WAV/MP3 on the upload icon; it's stored lossless-first and the waveform updates in place.
+- **Strip directions** — the right-rail shortcut scrubs `*(stage direction)*` markers from the focused section's text (or use **Strip all directions** in the left rail to do the whole project).
+- **Insert SFX between rows** — hover the gap between two rows and click **+**; SFX rows carry an amber `sfx` chip.
+- **Tune the pause after any row** — the delay-after slider in the right rail overrides the default for just this beat.
 
 ## Layout
 
