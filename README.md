@@ -19,7 +19,7 @@ npm run preview    # preview the built site
 
 ## Screenshots
 
-Screenshots are captured automatically by Playwright against a running studio. The spec covers **32 view groups × 7 colour schemes = 224 PNGs** including the top chrome, ⌘K palette, marketplace (browse / gigs / post-gig / my-studio), and storyboard editor.
+Screenshots are captured automatically by Playwright against a running studio. The spec covers **40 view groups × 7 colour schemes = 280 PNGs** including the top chrome, ⌘K palette, marketplace (browse / gigs / post-gig / partners / my-studio with tiers + badges), publishing accounts + short-form variants, composition editor, and storyboard editor.
 
 ### Take screenshots locally
 

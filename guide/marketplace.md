@@ -18,7 +18,7 @@ There is **one** bill for creators: **storage**. It scales with the library they
 
 ## Sub-views
 
-The Marketplace has its own sub-navigation (separate chrome from the Studio stage rail): **Browse · Gigs · My studio**. The `+ Post a gig` action lives in the top-right of the chrome and is always one click away.
+The Marketplace has its own sub-navigation (separate chrome from the Studio stage rail): **Browse · Gigs · Partners · My studio**. The `+ Post a gig` and `+ List a partner` actions live in the top-right of the chrome and are always one click away.
 
 ### Browse
 
@@ -64,6 +64,19 @@ Click **+ Post a gig** in the top-right of the marketplace chrome. The form has:
 
 A live preview card sits to the right so you can see the cards as applicants will. Nothing is charged at post-time — funds only move through escrow once you **accept** a specific applicant.
 
+### Partners
+
+Partners is the **brand-sponsorship** side of the Marketplace — distinct from creators-for-hire. Two populations live here:
+
+- **Channels seeking sponsors** — audience, niche, sample reads, CPM ranges.
+- **Brands seeking channels** — products, campaigns, deliverable expectations, budgets.
+
+Both are rendered as partner cards with hue-themed covers, tier badges (see [Gamification](#gamification-tiers-badges-streaks)), active listings count, and a spotlight flag for top performers. Clicking a card opens **Partner detail**: tagline, description, listings the partner has open, reviews against prior placements, and a sticky `Pitch a partnership` button.
+
+Click **+ List a partner** in the chrome to add your own channel or brand to the directory. You pick the kind (`channel` or `brand`), describe your audience or product, and attach one or more active listings with price ranges and status (`open`, `paused`, `filled`).
+
+Reviews here are **placement-scoped**, not gig-scoped — they reference a specific placement ID so both sides can back-reference the engagement. Same star-rating mechanics as artist reviews.
+
 ### Artist profile
 
 Cover image, demo reel with inline audio playback, reviews, and a sticky hire sidebar. The sidebar has:
@@ -88,7 +101,40 @@ If you're a creator, this is your dashboard:
 - **Next payout card** — amount, date, early-withdraw option ($5 fee)
 - **Spotlight status** — your progress toward the next quarterly spotlight rotation
 
-### Hire & contract
+## Gamification: tiers, badges, streaks
+
+Creators and brand partners earn **visible, criterion-based recognition** based on their public stats. Nothing here is pay-to-play — tiers and badges are computed from `rating`, `jobsCompleted`, `onTimePct`, and `replyHours`. The rationale for every badge is visible in the UI, so there's no mystery about what unlocked it.
+
+### Tiers
+
+Four tiers, gated on hard thresholds — all three criteria must be met to advance:
+
+| Tier | Rating | Completed jobs | On-time |
+|------|-------:|---------------:|--------:|
+| **Bronze** | — | — | — |
+| **Silver** | ≥ 4.5 | ≥ 10 | ≥ 90% |
+| **Gold** | ≥ 4.8 | ≥ 50 | ≥ 95% |
+| **Platinum** | ≥ 4.9 | ≥ 150 | ≥ 98% |
+
+The profile card also shows a `tierScore` (0–100): **40% rating · 30% volume · 20% on-time · 10% reply speed**. It's a smooth signal between tier jumps so progress is legible.
+
+### Badges
+
+Badges are **current-state** flags — they turn on and off as stats move. Examples: `Five-star recent` (last 10 reviews all ≥ 5★), `Reply within 1h`, `No-missed-deadline month`. Each badge lists its rationale on hover so there's no guesswork.
+
+### Achievements
+
+Achievements are **permanent** milestones — once unlocked, they stay. Rarity tiers: `common` · `uncommon` · `rare` · `legendary`. Examples: `First completed gig`, `Repeat client` (same buyer books twice), `10 five-star reviews in a row`. Unlocks show the date in the profile's achievements strip.
+
+### Streaks
+
+Streaks are **consecutive counters** that reset when broken but remain visible as historical markers. Examples: `On-time delivery streak · 14 days`, `First-reply-under-1h streak · 9 messages`. An inactive streak renders muted to show the last peak.
+
+### Next-tier hint
+
+Every profile shows what's still needed for the next tier — e.g. `Silver → Gold: +12 jobs, rating ≥ 4.8`. No gamified carrot; just a concrete list so creators know exactly what moves the needle.
+
+## Hire & contract
 
 A 4-step stepper: **Brief → Scope & schedule → Contract → Pay & start**. The contract is CRAFT-standard with fields for parties, deliverable, format, revisions, delivery date, usage rights, and credit line. The payment summary breaks out:
 
