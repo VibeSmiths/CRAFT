@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'CRAFT Studio',
   description: 'Content Refinement & Authoring Framework Toolkit — User Guide',
-  base: '/docs/',
+  base: '/',
   ignoreDeadLinks: [/localhost/],
   themeConfig: {
     logo: '/logo.png',
