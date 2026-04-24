@@ -346,7 +346,7 @@ async function mockJobs(page: Page) {
       startedAt: new Date(now - 90 * 60_000).toISOString(),
       finishedAt: new Date(now - 88 * 60_000).toISOString(),
       durationMs: 132_000,
-      output: ['[composition-render] Remotion slice rendered (298s)', '[composition-render] ffmpeg compose complete → final.mp4 (48.3 MB)'],
+      output: ['[composition-render] ffmpeg compose complete → final.mp4 (48.3 MB)'],
     },
     {
       id: 'job-1776606305-mno5',
@@ -727,33 +727,6 @@ test.describe('Documentation Screenshots', () => {
         await shotAllSchemes(page, 'ollama-models');
       });
 
-      test('image generate panel', async ({ page }) => {
-        test.setTimeout(120000);
-        await page.waitForTimeout(1500);
-        await selectChannel(page);
-        await setView(page, 'image-generate');
-        // Fill in a prompt for a nicer screenshot
-        const promptArea = page.locator('main textarea').first();
-        if (await promptArea.isVisible()) {
-          await promptArea.fill('futuristic cityscape at sunset, cyberpunk neon lights, detailed architecture, cinematic lighting');
-          await page.waitForTimeout(500);
-          // Try to generate if ComfyUI is available — click the Generate button in the main content area (not sidebar)
-          const generateBtn = page.locator('main button:has-text("Generate")').first();
-          if (await generateBtn.isVisible() && await generateBtn.isEnabled()) {
-            await generateBtn.click();
-            try {
-              // Wait for image to appear in gallery
-              await page.locator('main img[src*="/api/"]').first().waitFor({ state: 'visible', timeout: 60000 });
-              await page.waitForTimeout(2000);
-            } catch {
-              // ComfyUI may be processing — wait for any status change
-              await page.waitForTimeout(5000);
-            }
-          }
-        }
-        await shotAllSchemes(page, 'image-generate');
-      });
-
       test('music generate panel', async ({ page }) => {
         test.setTimeout(180000);
         await page.waitForTimeout(1500);
@@ -824,12 +797,12 @@ test.describe('Documentation Screenshots', () => {
               contentType: 'application/json',
               body: JSON.stringify({
                 episodes: [
-                  { id: 'ep-quantum-error', title: 'Quantum Error Correction Explained', slug: 'ep-quantum-error', channelId: dummyChannelId, targetDuration: '12:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'complete' }, assets: { status: 'in_progress' }, compositing: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
-                  { id: 'ep-linux-gaming', title: 'Linux Gaming: The Year It Happened', slug: 'ep-linux-gaming', channelId: dummyChannelId, targetDuration: '15:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'complete' }, assets: { status: 'complete' }, compositing: { status: 'complete' }, export: { status: 'complete' }, review: { status: 'needs_human' }, publish: { status: 'not_started' } } },
-                  { id: 'ep-usb-scam', title: 'The USB-C Cable Scam', slug: 'ep-usb-scam', channelId: dummyChannelId, targetDuration: '0:58', pipeline: { research: { status: 'complete' }, script: { status: 'review' }, storyboard: { status: 'not_started' }, assets: { status: 'not_started' }, compositing: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
-                  { id: 'ep-home-server', title: 'Home Server for $50', slug: 'ep-home-server', channelId: dummyChannelId, targetDuration: '10:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'complete' }, assets: { status: 'complete' }, compositing: { status: 'complete' }, export: { status: 'complete' }, review: { status: 'approved' }, publish: { status: 'complete' } } },
-                  { id: 'ep-ai-editors', title: 'AI Code Editors Ranked', slug: 'ep-ai-editors', channelId: dummyChannelId, targetDuration: '18:00', pipeline: { research: { status: 'in_progress' }, script: { status: 'not_started' }, storyboard: { status: 'not_started' }, assets: { status: 'not_started' }, compositing: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
-                  { id: 'ep-rust-vs-c', title: 'Is Rust Actually Faster Than C?', slug: 'ep-rust-vs-c', channelId: dummyChannelId, targetDuration: '14:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'error' }, assets: { status: 'not_started' }, compositing: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
+                  { id: 'ep-quantum-error', title: 'Quantum Error Correction Explained', slug: 'ep-quantum-error', channelId: dummyChannelId, targetDuration: '12:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'complete' }, assets: { status: 'in_progress' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
+                  { id: 'ep-linux-gaming', title: 'Linux Gaming: The Year It Happened', slug: 'ep-linux-gaming', channelId: dummyChannelId, targetDuration: '15:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'complete' }, assets: { status: 'complete' }, export: { status: 'complete' }, review: { status: 'needs_human' }, publish: { status: 'not_started' } } },
+                  { id: 'ep-usb-scam', title: 'The USB-C Cable Scam', slug: 'ep-usb-scam', channelId: dummyChannelId, targetDuration: '0:58', pipeline: { research: { status: 'complete' }, script: { status: 'review' }, storyboard: { status: 'not_started' }, assets: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
+                  { id: 'ep-home-server', title: 'Home Server for $50', slug: 'ep-home-server', channelId: dummyChannelId, targetDuration: '10:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'complete' }, assets: { status: 'complete' }, export: { status: 'complete' }, review: { status: 'approved' }, publish: { status: 'complete' } } },
+                  { id: 'ep-ai-editors', title: 'AI Code Editors Ranked', slug: 'ep-ai-editors', channelId: dummyChannelId, targetDuration: '18:00', pipeline: { research: { status: 'in_progress' }, script: { status: 'not_started' }, storyboard: { status: 'not_started' }, assets: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
+                  { id: 'ep-rust-vs-c', title: 'Is Rust Actually Faster Than C?', slug: 'ep-rust-vs-c', channelId: dummyChannelId, targetDuration: '14:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'error' }, assets: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
                 ],
               }),
             });
@@ -845,7 +818,6 @@ test.describe('Documentation Screenshots', () => {
       });
 
       test('episode detail - pipeline stages', async ({ page }) => {
-        // Mock episodes with one that has compositing complete for preview
         await page.route(`**/api/channels/*/episodes`, async (route: any, request: any) => {
           if (request.method() === 'GET') {
             await route.fulfill({
@@ -853,7 +825,7 @@ test.describe('Documentation Screenshots', () => {
               contentType: 'application/json',
               body: JSON.stringify({
                 episodes: [
-                  { id: 'ep-quantum-error', title: 'Quantum Error Correction Explained', slug: 'ep-quantum-error', channelId: dummyChannelId, targetDuration: '12:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'needs_human' }, assets: { status: 'not_started' }, compositing: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
+                  { id: 'ep-quantum-error', title: 'Quantum Error Correction Explained', slug: 'ep-quantum-error', channelId: dummyChannelId, targetDuration: '12:00', pipeline: { research: { status: 'complete' }, script: { status: 'complete' }, storyboard: { status: 'needs_human' }, assets: { status: 'not_started' }, export: { status: 'not_started' }, review: { status: 'not_started' }, publish: { status: 'not_started' } } },
                 ],
               }),
             });
@@ -1134,16 +1106,14 @@ test.describe('Documentation Screenshots', () => {
                 { id: 'ep-quantum-error', title: 'Quantum Error Correction Explained', channelId: dummyChannelId,
                   targetDuration: '12:00', pipeline: {
                     research: { status: 'complete' }, script: { status: 'complete' },
-                    storyboard: { status: 'complete' }, assets: { status: 'complete' },
-                    compositing: { status: 'complete' }, export: { status: opts.canPublish ? 'complete' : 'not_started' },
+                    storyboard: { status: 'complete' }, assets: { status: 'complete' }, export: { status: opts.canPublish ? 'complete' : 'not_started' },
                     review: { status: 'not_started' }, publish: { status: 'not_started' },
                   },
                 },
                 { id: 'ep-linux-gaming', title: 'Linux Gaming: The Year It Happened', channelId: dummyChannelId,
                   targetDuration: '15:00', pipeline: {
                     research: { status: 'complete' }, script: { status: 'complete' },
-                    storyboard: { status: 'complete' }, assets: { status: 'complete' },
-                    compositing: { status: 'complete' }, export: { status: 'complete' },
+                    storyboard: { status: 'complete' }, assets: { status: 'complete' }, export: { status: 'complete' },
                     review: { status: 'approved' }, publish: { status: 'not_started' },
                   },
                 },
@@ -1348,8 +1318,6 @@ test.describe('Documentation Screenshots', () => {
             await route.continue();
           }
         });
-        // Prevent RemotionPreview from hitting the live studio with a real bundle request.
-        await page.route('**/api/channels/*/episodes/*/composition/preview*', async (route: any) => {
           await route.fulfill({ status: 200, contentType: 'text/html', body: '<html><body style="background:#000"></body></html>' });
         });
 

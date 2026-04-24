@@ -24,21 +24,18 @@ features:
   - icon: "\uD83C\uDFA7"
     title: Audio Production
     details: 4 TTS providers (Edge free, ElevenLabs, OpenAI, OpenedAI Speech local). AI background music generation with MusicGen.
-  - icon: "\uD83D\uDDBC\uFE0F"
-    title: AI Image Generation
-    details: Generate thumbnails and B-roll with ComfyUI + Stable Diffusion. Channel-aware prompts with AI assist.
   - icon: "\uD83C\uDFB5"
     title: AI Music Generation
     details: Create instrumental background tracks from text prompts with MusicGen. Bind to projects or standalone download.
   - icon: "\uD83C\uDFAC"
-    title: 8-Stage Pipeline
-    details: Automated content pipeline — Research, Script, Storyboard, Assets, Compositing, Export, Review, Publish — orchestrated by 14 AI agents with quality gates.
+    title: 7-Stage Pipeline
+    details: Automated content pipeline — Research, Script, Storyboard, Assets, Export, Review, Publish — orchestrated by AI agents with quality gates.
   - icon: "\uD83D\uDCCB"
     title: AI Proposals
     details: AI-scored content proposals with trend analysis, timeliness signals, and approval workflows before entering production.
   - icon: "\uD83D\uDE80"
     title: GPU-Accelerated
-    details: 4 optional GPU services — Ollama, OpenedAI Speech, MusicGen, ComfyUI. All self-hosted.
+    details: 3 optional GPU services — Ollama, OpenedAI Speech, MusicGen. All self-hosted.
   - icon: "\uD83D\uDCDA"
     title: Resource Library
     details: Search 14 royalty-free sources for video, image, audio, and reference material with auto-attribution.
@@ -62,9 +59,9 @@ features:
   <img src="https://img.shields.io/badge/Kubernetes-Helm-0d9488?logo=helm&logoColor=white" alt="Kubernetes" />
   <img src="https://img.shields.io/badge/AI-Claude_%2B_Gemini_%2B_Ollama-0d9488?logo=anthropic&logoColor=white" alt="AI" />
   <img src="https://img.shields.io/badge/TTS-300%2B_Voices-0d9488" alt="TTS" />
-  <img src="https://img.shields.io/badge/Pipeline-8_Stages-0d9488" alt="Pipeline" />
+  <img src="https://img.shields.io/badge/Pipeline-7_Stages-0d9488" alt="Pipeline" />
   <img src="https://img.shields.io/badge/Agents-14-0d9488?logo=anthropic&logoColor=white" alt="Agents" />
-  <img src="https://img.shields.io/badge/GPU-5_Services-0d9488?logo=nvidia&logoColor=white" alt="GPU" />
+  <img src="https://img.shields.io/badge/GPU-3_Services-0d9488?logo=nvidia&logoColor=white" alt="GPU" />
   <img src="https://img.shields.io/badge/Mobile-Android-0d9488?logo=android&logoColor=white" alt="Mobile" />
 </div>
 
@@ -110,7 +107,7 @@ features:
     <div class="step-number">3</div>
     <div class="step-content">
       <strong>Run the Pipeline</strong>
-      <p>AI agents research, write, storyboard, and compose your video through 8 stages with automated quality gates.</p>
+      <p>AI agents research, write, storyboard, and compose your video through 7 stages with automated quality gates.</p>
     </div>
   </div>
   <div class="step">
@@ -196,23 +193,6 @@ features:
   </div>
 </div>
 
-<div class="feature-section">
-  <div class="feature-text">
-    <h3>AI Image Generation</h3>
-    <p>Generate thumbnails and B-roll with ComfyUI and Stable Diffusion. Channel-aware AI prompts get you started fast.</p>
-    <ul>
-      <li>Text-to-image with multiple checkpoint support</li>
-      <li>Aspect ratio presets (1:1, 16:9, 9:16, 4:3, 3:4)</li>
-      <li>Generation metadata saved per image (prompt, settings)</li>
-      <li>Click-to-zoom preview with full parameter display</li>
-      <li>Per-channel gallery with download and delete</li>
-    </ul>
-  </div>
-  <div class="feature-screenshot">
-    <SchemeImage name="image-generate" alt="AI Image Generation" />
-  </div>
-</div>
-
 <div class="feature-section reverse">
   <div class="feature-text">
     <h3>Audio Production</h3>
@@ -254,9 +234,9 @@ features:
       <span class="feature-stat">14 AI Agents</span>
       <span class="feature-stat">Quality Gates</span>
     </div>
-    <p>Orchestrate complete video production through 8 stages — each powered by a specialized AI agent with automated producer review and feedback loops.</p>
+    <p>Orchestrate complete video production through 7 stages — each powered by a specialized AI agent with automated producer review and feedback loops.</p>
     <ul>
-      <li>Research → Script → Storyboard → Assets → Compositing → Export → Review → Publish</li>
+      <li>Research → Script → Storyboard → Assets → Export → Review → Publish</li>
       <li>Producer agent scores each stage 1-10 with revision feedback</li>
       <li>Run full pipeline or individual stages</li>
       <li>Upstream issue detection and soft recovery</li>
@@ -316,7 +296,6 @@ features:
   <div class="powered-group">
     <div class="powered-label">Video & research</div>
     <div class="tech-stack">
-      <span class="tech-badge">Remotion</span>
       <span class="tech-badge">ffmpeg</span>
       <span class="tech-badge">yt-dlp</span>
     </div>
@@ -336,13 +315,6 @@ features:
       <span class="tech-badge">OpenedAI Speech</span>
       <span class="tech-badge">ElevenLabs</span>
       <span class="tech-badge">MusicGen</span>
-    </div>
-  </div>
-  <div class="powered-group">
-    <div class="powered-label">Images</div>
-    <div class="tech-stack">
-      <span class="tech-badge">ComfyUI</span>
-      <span class="tech-badge">Stable Diffusion</span>
     </div>
   </div>
 </div>

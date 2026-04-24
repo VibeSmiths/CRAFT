@@ -1,6 +1,6 @@
 # Episodes
 
-Episodes represent complete video productions that move through an 8-stage pipeline orchestrated by AI agents with automated quality gates. Reach Episodes from the top-chrome stage rail — **Episodes** is the rightmost stage.
+Episodes represent complete video productions that move through a 7-stage pipeline orchestrated by AI agents with automated quality gates. Reach Episodes from the top-chrome stage rail — **Episodes** is the rightmost stage.
 
 <SchemeImage name="episodes-panel" alt="Episodes panel" />
 
@@ -22,8 +22,7 @@ Click any episode card to open the detail view. It has three stacked sections:
 | **Script** | Writer | Producer | 3 | Write screenplay in channel character voice |
 | **Storyboard** | Storyboarder | Producer | 2 | Plan visual sequences and scene layouts |
 | **Assets** | Asset Finder | — | 1 | Find and download media resources |
-| **Compositing** | Compositor | Producer | 3 | Assemble Remotion video from 65+ components |
-| **Export** | Render Worker | — | 1 | Render final MP4 via Chromium (dispatched to `worker-render`) |
+| **Export** | Render Worker | — | 1 | Render final MP4 via ffmpeg (dispatched to `worker-render`) |
 | **Review** | Producer | — | 1 | Holistic quality gate across all artifacts — always requires human approval |
 | **Publish** | — | — | 1 | Guard on review approval, mark episode complete |
 
@@ -74,7 +73,7 @@ Research, script, and storyboard rows have a chevron for viewing the produced ar
 
 ## Composition
 
-The header's **Composition** button opens the timeline editor for direct composition editing (Remotion composition format). Useful for fine-tuning once the AI has produced a first pass.
+The header's **Composition** button opens the timeline editor for direct composition editing. Useful for fine-tuning once the AI has produced a first pass.
 
 ## Episode files
 
@@ -85,7 +84,6 @@ manifest.yml          # Pipeline state (stage statuses + scriptId + audioProject
 research.md           # Research output
 script.md             # Written screenplay
 storyboard.md         # Visual plan (or JSON if generated)
-Episode.tsx           # Remotion composition
 feedback/             # Producer review notes per stage
   research.md
   script.md

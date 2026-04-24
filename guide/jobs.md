@@ -12,7 +12,7 @@ Click the **channel pill** in the top chrome, then **Jobs** in the dropdown. The
 
 | Job | What it does |
 |-----|-------------|
-| **Orchestrate** | Drives the 8-stage Episode pipeline with quality gates and feedback loops |
+| **Orchestrate** | Drives the 7-stage Episode pipeline with quality gates and feedback loops |
 | **Idea** | AI idea generation in character voice |
 | **Proposals** | AI-scored proposals with trend analysis |
 | **Fact-check** | Claim verification across the script |
@@ -20,7 +20,7 @@ Click the **channel pill** in the top chrome, then **Jobs** in the dropdown. The
 | **TTS** | Text-to-speech rendering and merge |
 | **Discover** | YouTube research (yt-dlp) with progressive filtering |
 | **Resource download** | Pull assets from the 14 sources |
-| **Render** | Remotion → MP4 export (Chromium) |
+| **Render** | ffmpeg composition → MP4 export |
 
 ## Lifecycle
 
@@ -35,7 +35,7 @@ Each job row expands to show streamed output, duration, and (where applicable) a
 
 ## Cancellation
 
-Any running job can be cancelled from its row. Multi-stage jobs (the 8-stage pipeline) stop cleanly at the next stage boundary so they don't leave half-finished artifacts behind.
+Any running job can be cancelled from its row. Multi-stage jobs (the 7-stage pipeline) stop cleanly at the next stage boundary so they don't leave half-finished artifacts behind.
 
 ## Why jobs?
 

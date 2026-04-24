@@ -1,12 +1,12 @@
 # Getting Started
 
-CRAFT Studio is a YouTube content creation platform with AI-powered idea generation, script writing, video production, audio, competitive research, and multi-source resource discovery — backed by PostgreSQL, NATS workers, and 14 specialized AI agents.
+CRAFT Studio is a YouTube content creation platform with AI-powered idea generation, script writing, video production, audio, competitive research, and multi-source resource discovery — backed by PostgreSQL, NATS workers, and specialized AI agents.
 
 ## What You Can Do
 
 - **Generate Ideas** — AI-powered brainstorming with channel personality, or save from YouTube research
 - **Write Scripts** — AI write, revise, polish with fact-checking and humanization (Claude, Gemini, Ollama)
-- **Produce Videos** — 65+ Remotion components with an 8-stage pipeline orchestrated by AI agents
+- **Produce Videos** — 7-stage pipeline orchestrated by AI agents, rendered with ffmpeg
 - **Research Competitors** — YouTube search with outlier detection, channel deep dives, and earnings estimates
 - **Curate Content** — AI-scored proposals, approval workflows, and episode pipeline tracking
 - **Produce Audio** — 300+ TTS voices with screenplay-aware parsing, GPU speech synthesis, and voice cloning
@@ -36,15 +36,15 @@ Channel-scoped actions (Proposals, Jobs, channel Settings) live inside the chann
 ```
 Browser ──> Studio API ──> Studio runtime
               |-- AI (Claude Agent SDK + Gemini + Ollama)
-              |-- 14 AI Agents (research, write, storyboard, composite...)
+              |-- AI Agents (research, write, storyboard, assets...)
               |-- YouTube research (yt-dlp + Data API)
               |-- TTS (Edge TTS, ElevenLabs, OpenAI, OpenedAI Speech)
               |-- Background workers (idea, tts, discover, render...)
               |-- Role-based multi-tenant access
               |-- Feedback → GitHub Issues (AI grooming + worker)
               |-- Persistent storage + caching
-              |-- Remotion Video (65+ components, Chromium render)
-              \-- GPU Services (Ollama, ComfyUI, MusicGen)
+              |-- ffmpeg composition render
+              \-- GPU Services (Ollama, MusicGen, OpenedAI Speech)
 
 Mobile App ──> Same Studio API (local network)
 ```

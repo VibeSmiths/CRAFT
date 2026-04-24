@@ -47,8 +47,8 @@ The right rail pulls from the channel's downloaded Resources library:
 
 1. Finalize a script (promote from draft → review → final in the Script editor).
 2. Open its Episode — or create one — and click **Open editor** on the storyboard stage.
-3. Walk beat-by-beat. For each scene, pick a shot type, jot notes, attach any images/clips from the library. If you're missing visuals, jump out to Resource Search or Image Generate and they'll appear in the right rail.
-4. When every scene is populated, mark the storyboard stage complete in the Episode's pipeline and hand off to assets/compositing.
+3. Walk beat-by-beat. For each scene, pick a shot type, jot notes, attach any images/clips from the library. If you're missing visuals, jump out to Resource Search and they'll appear in the right rail.
+4. When every scene is populated, mark the storyboard stage complete in the Episode's pipeline and hand off to assets.
 
 ## Persistence
 

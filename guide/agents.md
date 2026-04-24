@@ -1,10 +1,10 @@
 # AI Agents
 
-CRAFT uses 14 specialized AI agents that collaborate through the content pipeline. Each agent has a defined role, structured output format, and quality expectations. Agents are invoked via the Claude Agent SDK with full tool access (Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch).
+CRAFT uses specialized AI agents that collaborate through the content pipeline. Each agent has a defined role, structured output format, and quality expectations. Agents are invoked via the Claude Agent SDK with full tool access (Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch).
 
 ## Pipeline Agents
 
-These agents are directly wired into the 8-stage orchestration pipeline:
+These agents are directly wired into the 7-stage orchestration pipeline:
 
 | Agent | Pipeline Stage | Tools | Output |
 |-------|---------------|-------|--------|
@@ -12,7 +12,6 @@ These agents are directly wired into the 8-stage orchestration pipeline:
 | **Writer** | Script | File read/write | `script.md` — screenplay in channel character voice |
 | **Storyboarder** | Storyboard | File read/write | `storyboard.md` — visual sequences, scene layouts, timing |
 | **Asset Finder** | Assets | Web search, file tools | Downloads media resources to episode directory |
-| **Compositor** | Compositing | File read/write, Bash | `Episode.tsx` — Remotion video composition |
 | **Producer** | Review (all stages) | Read-only | Structured JSON: score (1-10), pass/fail, feedback, upstream issues |
 
 ## Support Agents
@@ -61,7 +60,6 @@ Each agent invocation has configurable budget limits:
 | Script | 30 | $3.00 | $0.50 |
 | Storyboard | 25 | $2.00 | $0.50 |
 | Assets | 30 | $3.00 | — |
-| Compositing | 35 | $5.00 | $0.50 |
 | Final Review | 15 | $1.00 | — |
 
 ::: tip
