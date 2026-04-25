@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { withBase } from 'vitepress'
 
 const props = defineProps({
   name: { type: String, required: true },
@@ -34,7 +35,7 @@ onBeforeUnmount(() => {
 <template>
   <img
     v-if="mounted"
-    :src="`/CRAFT/screenshots/${name}-${scheme}.png`"
+    :src="withBase(`/screenshots/${name}-${scheme}.png`)"
     :alt="alt || name"
     class="scheme-screenshot"
     :key="`${name}-${scheme}`"

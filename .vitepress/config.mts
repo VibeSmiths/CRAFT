@@ -10,7 +10,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/guide/' },
       { text: 'Mobile', link: '/mobile/' },
-      { text: 'Open Studio', link: 'https://dev.rudolphhome.com/studio/', target: '_blank' },
+      { text: 'Open Studio', link: 'https://dev.mossworks.io/studio/', target: '_blank' },
     ],
     sidebar: [
       {

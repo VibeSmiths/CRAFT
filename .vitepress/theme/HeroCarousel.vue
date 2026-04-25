@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { withBase } from 'vitepress';
 
 const baseScreenshots = [
   { name: 'ideas-panel', alt: 'Ideas Panel' },
@@ -43,7 +44,7 @@ const scheme = ref('xanderu');
 
 const screenshots = computed(() =>
   baseScreenshots.map(s => ({
-    src: `/CRAFT/screenshots/${s.name}-${scheme.value}.png`,
+    src: withBase(`/screenshots/${s.name}-${scheme.value}.png`),
     alt: s.alt,
   }))
 );
