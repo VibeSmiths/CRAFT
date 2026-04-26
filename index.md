@@ -24,9 +24,12 @@ features:
   - icon: "\uD83C\uDFA7"
     title: Audio Production
     details: 4 TTS providers (Edge free, ElevenLabs, OpenAI, OpenedAI Speech local). AI background music generation with MusicGen.
-  - icon: "\uD83C\uDFB5"
-    title: AI Music Generation
-    details: Create instrumental background tracks from text prompts with MusicGen. Bind to projects or standalone download.
+  - icon: "\uD83C\uDFA8"
+    title: Storyboard Editor
+    details: Plan every scene with shot type, duration, transitions, director notes, and per-scene resource attachments before composition begins.
+  - icon: "\u2702\uFE0F"
+    title: Video Editor
+    details: Multi-track Remotion-backed timeline editor with chapters, V/A tracks, clip inspector, library panel, and direct render to MP4.
   - icon: "\uD83C\uDFAC"
     title: 7-Stage Pipeline
     details: Automated content pipeline — Research, Script, Storyboard, Assets, Export, Review, Publish — orchestrated by AI agents with quality gates.
@@ -173,23 +176,23 @@ features:
 
 <div class="feature-section reverse">
   <div class="feature-text">
-    <h3>Resource Library</h3>
+    <h3>Storyboard Editor</h3>
     <div class="feature-stats">
-      <span class="feature-stat">14 Sources</span>
-      <span class="feature-stat">4 Media Types</span>
-      <span class="feature-stat">Auto Attribution</span>
+      <span class="feature-stat">Per-scene Planning</span>
+      <span class="feature-stat">Shot &amp; Transition</span>
+      <span class="feature-stat">Resource Attach</span>
     </div>
-    <p>Search across Pexels, Pixabay, Unsplash, NASA, Wikimedia Commons, Met Museum, Europeana, and more. Preview inline and download with automatic attribution tracking.</p>
+    <p>Plan every scene before composition begins. The storyboard parses your script into beats and lets you set shot type, duration, transitions, and director notes per scene — then attach the exact images, videos, or sound effects each scene needs from the resource library.</p>
     <ul>
-      <li>Video, image, audio, and reference search</li>
-      <li>Grid & list views with hover preview</li>
-      <li>Source and license filtering</li>
-      <li>Tag-based search suggestions from scripts</li>
-      <li>Upload your own media with drag-and-drop</li>
+      <li>3-column editor: beat list / scene detail / resource picker</li>
+      <li>Shot type chips (wide, medium, close, cutaway, insert, aerial)</li>
+      <li>Director notes — framing, lighting, pacing, music cues</li>
+      <li>Per-scene resource attachments feed straight into composition</li>
+      <li>Auto-generated status bar tallies resources, duration, save state</li>
     </ul>
   </div>
   <div class="feature-screenshot">
-    <SchemeImage name="resources-search" alt="Resource Library" />
+    <SchemeImage name="storyboard-editor" alt="Storyboard Editor" />
   </div>
 </div>
 
@@ -211,18 +214,23 @@ features:
 
 <div class="feature-section">
   <div class="feature-text">
-    <h3>AI Music Generation</h3>
-    <p>Create instrumental background tracks from text prompts with Meta's MusicGen. Bind directly to audio projects or download standalone.</p>
+    <h3>Video Editor</h3>
+    <div class="feature-stats">
+      <span class="feature-stat">Multi-track Timeline</span>
+      <span class="feature-stat">Chapter Markers</span>
+      <span class="feature-stat">MP4 Export</span>
+    </div>
+    <p>Composition is the studio's video editor — a Remotion-backed multi-track timeline where storyboard scenes, voiceover, music beds, and B-roll come together. Inspect any clip, scrub the playhead, drop chapter markers, and render straight to MP4 without leaving the studio.</p>
     <ul>
-      <li>Text-to-music with genre, mood, and instrument control</li>
-      <li>Adjustable duration (10s–30s)</li>
-      <li>AI-assisted prompt generation</li>
-      <li>Attach to audio projects or standalone download</li>
-      <li>Prompt tips for best results</li>
+      <li>V/A track stack with reorderable, lockable, mutable lanes</li>
+      <li>Chapter strip across the top — jump to any beat with one tap</li>
+      <li>Library panel with Effects, Transitions, Text, Audio, Captions, AI tabs</li>
+      <li>Clip inspector with opacity, in/out points, source preview</li>
+      <li>One-click MP4 export via the composition worker</li>
     </ul>
   </div>
   <div class="feature-screenshot">
-    <SchemeImage name="music-generate" alt="AI Music Generation" />
+    <SchemeImage name="compose-editor" alt="Video Editor (Composition)" />
   </div>
 </div>
 
@@ -248,7 +256,7 @@ features:
   </div>
 </div>
 
-<div class="feature-section reverse">
+<div class="feature-section">
   <div class="feature-text">
     <h3>AI Proposals</h3>
     <p>AI-scored content proposals analyze trends, channel history, and audience signals to surface your best next video topic. Review, approve, and feed directly into the production pipeline.</p>
