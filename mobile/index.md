@@ -19,5 +19,4 @@ The CRAFT Android companion app gives you full feature parity with the web studi
 
 ## Next steps
 
-- [Setup](/mobile/setup) — install the APK, connect to your server
 - [Features](/mobile/features) — full screen-by-screen walkthrough

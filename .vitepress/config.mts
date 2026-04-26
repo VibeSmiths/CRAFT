@@ -63,7 +63,6 @@ export default defineConfig({
         text: 'Mobile App',
         items: [
           { text: 'Overview', link: '/mobile/' },
-          { text: 'Setup', link: '/mobile/setup' },
           { text: 'Features', link: '/mobile/features' },
         ],
       },
