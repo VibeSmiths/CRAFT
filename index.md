@@ -196,22 +196,6 @@ features:
   </div>
 </div>
 
-<div class="feature-section reverse">
-  <div class="feature-text">
-    <h3>Audio Production</h3>
-    <p>Full audio pipeline from TTS to final mix. 300+ voices with screenplay-aware section parsing. Background music layering and SFX insertion.</p>
-    <ul>
-      <li>4 TTS providers — Edge (free), ElevenLabs, OpenAI, OpenedAI Speech</li>
-      <li>Upload your own voiceover and split at timestamps</li>
-      <li>SFX sections between speech sections</li>
-      <li>Background music with volume, fade, and loop controls</li>
-    </ul>
-  </div>
-  <div class="feature-screenshot">
-    <SchemeImage name="audio-sections" alt="Audio Production" />
-  </div>
-</div>
-
 <div class="feature-section">
   <div class="feature-text">
     <h3>Video Editor</h3>
@@ -269,6 +253,22 @@ features:
   </div>
   <div class="feature-screenshot">
     <SchemeImage name="proposals-panel" alt="AI Proposals" />
+  </div>
+</div>
+
+<div class="feature-section reverse">
+  <div class="feature-text">
+    <h3>Audio Production</h3>
+    <p>Full audio pipeline from TTS to final mix. 300+ voices with screenplay-aware section parsing. Background music layering and SFX insertion.</p>
+    <ul>
+      <li>4 TTS providers — Edge (free), ElevenLabs, OpenAI, OpenedAI Speech</li>
+      <li>Upload your own voiceover and split at timestamps</li>
+      <li>SFX sections between speech sections</li>
+      <li>Background music with volume, fade, and loop controls</li>
+    </ul>
+  </div>
+  <div class="feature-screenshot">
+    <SchemeImage name="audio-sections" alt="Audio Production" />
   </div>
 </div>
 
