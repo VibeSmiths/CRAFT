@@ -273,42 +273,4 @@ features:
   </div>
 </div>
 
-## Powered By
-
-<div class="powered-section">
-  <div class="powered-group">
-    <div class="powered-label">Frontend</div>
-    <div class="tech-stack">
-      <span class="tech-badge">React</span>
-      <span class="tech-badge">TypeScript</span>
-      <span class="tech-badge">Tailwind</span>
-      <span class="tech-badge">Zustand</span>
-    </div>
-  </div>
-  <div class="powered-group">
-    <div class="powered-label">Video & research</div>
-    <div class="tech-stack">
-      <span class="tech-badge">ffmpeg</span>
-      <span class="tech-badge">yt-dlp</span>
-    </div>
-  </div>
-  <div class="powered-group">
-    <div class="powered-label">AI models</div>
-    <div class="tech-stack">
-      <span class="tech-badge">Claude</span>
-      <span class="tech-badge">Gemini</span>
-      <span class="tech-badge">Ollama</span>
-    </div>
-  </div>
-  <div class="powered-group">
-    <div class="powered-label">Audio</div>
-    <div class="tech-stack">
-      <span class="tech-badge">Edge TTS</span>
-      <span class="tech-badge">OpenedAI Speech</span>
-      <span class="tech-badge">ElevenLabs</span>
-      <span class="tech-badge">MusicGen</span>
-    </div>
-  </div>
-</div>
-
 </div>
