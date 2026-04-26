@@ -29,16 +29,13 @@ features:
     details: Plan every scene with shot type, duration, transitions, director notes, and per-scene resource attachments before composition begins.
   - icon: "\u2702\uFE0F"
     title: Video Editor
-    details: Multi-track Remotion-backed timeline editor with chapters, V/A tracks, clip inspector, library panel, and direct render to MP4.
+    details: Multi-track timeline editor with chapters, V/A tracks, clip inspector, library panel, and direct render to MP4.
   - icon: "\uD83C\uDFAC"
     title: 7-Stage Pipeline
     details: Automated content pipeline — Research, Script, Storyboard, Assets, Export, Review, Publish — orchestrated by AI agents with quality gates.
   - icon: "\uD83D\uDCCB"
     title: AI Proposals
     details: AI-scored content proposals with trend analysis, timeliness signals, and approval workflows before entering production.
-  - icon: "\uD83D\uDE80"
-    title: GPU-Accelerated
-    details: 3 optional GPU services — Ollama, OpenedAI Speech, MusicGen. All self-hosted.
   - icon: "\uD83D\uDCDA"
     title: Resource Library
     details: Search 14 royalty-free sources for video, image, audio, and reference material with auto-attribution.
@@ -204,7 +201,7 @@ features:
       <span class="feature-stat">Chapter Markers</span>
       <span class="feature-stat">MP4 Export</span>
     </div>
-    <p>Composition is the studio's video editor — a Remotion-backed multi-track timeline where storyboard scenes, voiceover, music beds, and B-roll come together. Inspect any clip, scrub the playhead, drop chapter markers, and render straight to MP4 without leaving the studio.</p>
+    <p>Composition is the studio's video editor — a multi-track timeline where storyboard scenes, voiceover, music beds, and B-roll come together. Inspect any clip, scrub the playhead, drop chapter markers, and render straight to MP4 without leaving the studio.</p>
     <ul>
       <li>V/A track stack with reorderable, lockable, mutable lanes</li>
       <li>Chapter strip across the top — jump to any beat with one tap</li>
