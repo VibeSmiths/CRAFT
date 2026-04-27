@@ -31,34 +31,54 @@ Unlike the raw Anthropic API, the Agent SDK uses your Claude subscription. Premi
 
 ## Ollama (Local LLM)
 
-Ollama runs models on your local GPU — no API key needed, no internet after the model is pulled. Available whenever the Ollama service is reachable (GPU services are optional; see the deployment docs for your administrator).
+Ollama runs models on your local GPU — no API key needed, no internet after the model is pulled. CRAFT picks up whatever models are loaded on the Ollama server it's pointed at; the model picker shows them automatically in an "Ollama (Free)" optgroup. Available whenever the Ollama service is reachable (GPU services are optional; see the deployment docs for your administrator).
 
-### How to pull models
+::: tip Auto-pull on first boot
+The Ollama container auto-pulls `qwen2.5:1.5b` if no models exist when it starts, so a fresh deploy boots with at least one usable local model. The recommended default is `qwen2.5:7b` (~4.7 GB, 128 k context) for script writing — pull it once and it stays available.
+:::
 
-1. Open **Channel settings** (channel pill dropdown → Channel settings, or Settings on the right rail).
-2. Scroll to the **Local AI (Ollama)** section.
-3. Click a suggested model chip, or type any model name (e.g. `llama3.1:8b`) and click **Pull**.
-4. Progress streams in real time; models persist across restarts.
+### Pulling additional models
 
-<SchemeImage name="ollama-models" alt="Ollama model management in Settings" />
+There's no in-app pull UI today — model management is an operator task. Pick whichever path matches your deploy:
+
+**k3s / Helm**
+```bash
+kubectl exec -n default deploy/craft-ollama -- ollama pull qwen2.5:7b
+kubectl exec -n default deploy/craft-ollama -- ollama list
+```
+
+**docker compose**
+```bash
+docker compose exec ollama ollama pull qwen2.5:7b
+docker compose exec ollama ollama list
+```
+
+**Local Ollama (dev outside Docker)**
+```bash
+ollama pull qwen2.5:7b
+```
+
+Pulled models persist across container restarts as long as the Ollama volume is mounted (`./models/ollama:/root/.ollama` in compose, the `ollama-models` PVC in Helm).
 
 ### Suggested models
 
 | Model | Size | Best for |
 |-------|------|----------|
-| `qwen2.5-coder:14b` | ~9 GB | Script writing, code-aware content |
+| `qwen2.5:7b` | ~4.7 GB | **Recommended default** — script writing, 128 k context |
+| `qwen2.5-coder:14b` | ~9 GB | Code-aware scripts, reasoning |
 | `deepseek-r1:14b` | ~9 GB | Reasoning, fact-heavy scripts |
 | `llama3.1:8b` | ~5 GB | General purpose (lower VRAM) |
+| `qwen2.5:1.5b` | ~986 MB | Auto-pulled fallback — fast but limited output |
 
 ### Characteristics
 
 - Streams responses token-by-token (like Gemini)
 - Fully offline once the model is downloaded
 - GPU required for usable speed
-- Models can be pulled and deleted from the Settings panel
+- Available to every user — Ollama models appear in the dropdown's "Ollama (Free)" optgroup whether or not the user has any API keys configured
 
 ::: tip VRAM requirements
-14B parameter models need ~10 GB VRAM. If you have 8 GB or less, pick 7B / 8B variants instead.
+14 B parameter models need ~10 GB VRAM. If you have 8 GB or less, pick 7 B / 8 B variants instead.
 :::
 
 ## Model selection

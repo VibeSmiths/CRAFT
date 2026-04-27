@@ -706,23 +706,11 @@ test.describe('Documentation Screenshots', () => {
         await shotAllSchemes(page, 'voice-picker');
       });
 
-      test('settings panel - ollama models', async ({ page }) => {
-        await page.waitForTimeout(1500);
-        await selectChannel(page);
-        await setView(page, 'settings');
-        await page.evaluate(() => {
-          const headings = Array.from(document.querySelectorAll('h3'));
-          const ollamaH3 = headings.find(h => h.textContent?.includes('Local AI'));
-          if (ollamaH3) {
-            ollamaH3.scrollIntoView({ block: 'start', behavior: 'instant' });
-          } else {
-            const el = document.querySelector('main');
-            if (el) el.scrollTop = el.scrollHeight * 0.85;
-          }
-        });
-        await page.waitForTimeout(500);
-        await shotAllSchemes(page, 'ollama-models');
-      });
+      // The in-app Ollama model-management UI was removed — operators
+      // pull models via `ollama pull` (kubectl exec / docker compose
+      // exec). The model dropdown still surfaces installed models, so
+      // the "ollama models in model select" test below stays.
+      test.skip('settings panel - ollama models', async ({ page: _page }) => {});
 
       test('music generate panel', async ({ page }) => {
         test.setTimeout(180000);
