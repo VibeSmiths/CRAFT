@@ -205,30 +205,8 @@ features:
 
 <div class="feature-section reverse">
   <div class="feature-text">
-    <h3>Episode Pipeline</h3>
-    <div class="feature-stats">
-      <span class="feature-stat">8 Stages</span>
-      <span class="feature-stat">14 AI Agents</span>
-      <span class="feature-stat">Quality Gates</span>
-    </div>
-    <p>Orchestrate complete video production through 7 stages — each powered by a specialized AI agent with automated producer review and feedback loops.</p>
-    <ul>
-      <li>Research → Script → Storyboard → Assets → Export → Review → Publish</li>
-      <li>Producer agent scores each stage 1-10 with revision feedback</li>
-      <li>Run full pipeline or individual stages</li>
-      <li>Upstream issue detection and soft recovery</li>
-      <li>Real-time progress via SSE</li>
-    </ul>
-  </div>
-  <div class="feature-screenshot">
-    <SchemeImage name="episodes-panel" alt="Episode Pipeline" />
-  </div>
-</div>
-
-<div class="feature-section">
-  <div class="feature-text">
     <h3>AI Proposals</h3>
-    <p>AI-scored content proposals analyze trends, channel history, and audience signals to surface your best next video topic. Review, approve, and feed directly into the production pipeline.</p>
+    <p>AI-scored content proposals analyze trends, channel history, and audience signals to surface your best next video topic. <strong>Create Episode</strong> drops the winning proposal straight onto the kanban with a starter script — no Ideas tab to babysit.</p>
     <ul>
       <li>0-100 confidence scoring with trend signals</li>
       <li>Timeliness indicators for time-sensitive topics</li>
@@ -241,7 +219,7 @@ features:
   </div>
 </div>
 
-<div class="feature-section reverse">
+<div class="feature-section">
   <div class="feature-text">
     <h3>Audio Production</h3>
     <p>Full audio pipeline from TTS to final mix. 300+ voices with screenplay-aware section parsing. Background music layering and SFX insertion.</p>
@@ -257,7 +235,7 @@ features:
   </div>
 </div>
 
-<div class="feature-section">
+<div class="feature-section reverse">
   <div class="feature-text">
     <h3>Channel Settings & Voice</h3>
     <p>Configure your channel's personality, voice, and analytics. The AI Character Creator generates a full persona from a few questions.</p>

@@ -31,12 +31,17 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { withBase } from 'vitepress';
 
+// Lead with the views the IA cleanup highlights — Ideas / Jobs panels
+// are gone, so their PNGs were removed from public/screenshots and
+// can't be carouselled. Storyboard + composition pull double duty for
+// the assembly story.
 const baseScreenshots = [
-  { name: 'ideas-panel', alt: 'Ideas Panel' },
-  { name: 'episodes-panel', alt: 'Episode Pipeline' },
+  { name: 'episodes-panel', alt: 'Episodes kanban' },
+  { name: 'script-editor', alt: 'AI Script Editor' },
+  { name: 'storyboard-editor', alt: 'Storyboard editor' },
+  { name: 'compose-editor', alt: 'Composition timeline' },
   { name: 'discover-search', alt: 'YouTube Discover' },
   { name: 'proposals-panel', alt: 'AI Proposals' },
-  { name: 'resources-search', alt: 'Resource Library' },
   { name: 'audio-sections', alt: 'Audio Production' },
 ];
 
