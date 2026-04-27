@@ -11,12 +11,12 @@ CRAFT Studio is a YouTube content creation platform with AI-powered idea generat
 - **Curate Content** — AI-scored proposals, approval workflows, and episode pipeline tracking
 - **Produce Audio** — 300+ TTS voices with screenplay-aware parsing, GPU speech synthesis, and voice cloning
 - **Find Resources** — Search 14 royalty-free sources for video, image, audio, and reference material
-- **Track Jobs** — Async NATS workers for AI generation, rendering, and downloads with real-time SSE updates
+- **Collaborate** — invite editors, video editors, and voice actors per channel; review notes pin to the timeline
 - **Go Mobile** — Android companion app with full dashboard parity over your local network
 
 <SchemeImage name="top-chrome" alt="Top chrome — the Flow redesign layout" />
 
-<SchemeImage name="ideas-panel" alt="Ideas Panel" />
+<SchemeImage name="episodes-panel" alt="Episodes kanban — every show is a card moving across the pipeline" />
 
 <SchemeImage name="channel-dive" alt="Channel Deep Dive" />
 
@@ -27,10 +27,10 @@ The Studio is organised around a **top chrome** — a single header bar — rath
 - **Logo · channel pill** on the left
 - **Ad / promo slot** between the channel pill and the search box. Free-tier users see a curated affiliate offer for creator tools (ElevenLabs, Descript, etc); active subscribers see a rotating marketplace spotlight; the slot collapses on narrow viewports.
 - **⌘K command palette** slot in the middle-right
-- **Stage rail** on the row below (`Discover → Ideas → Scripts → Episodes → Publish`) — the workflow stages, with **Marketplace · Settings · Feedback** on the far right
+- **Stage rail** on the row below (`Discover → Proposals → Episodes → Publish`) — the workflow stages, with **Marketplace · Settings · Feedback** on the far right. Proposals only appears for premium users.
 - **Avatar menu** top-right (API keys, password change, theme, sign out)
 
-Channel-scoped actions (Proposals, Jobs, channel Settings) live inside the channel-pill dropdown. See [Top chrome & ⌘K](/guide/command-palette) for the full tour.
+Channel settings live inside the channel-pill dropdown. Jobs are inlined as a section under Proposals. Ideas no longer has its own panel — Episodes is the single backlog (Proposals → "Create Episode" and Discover → "Inspire" both land on the kanban). See [Top chrome & ⌘K](/guide/command-palette) for the full tour.
 
 ## Architecture
 
@@ -55,15 +55,16 @@ Mobile App ──> Same Studio API (local network)
 Once you're signed in, the top chrome gives you everything:
 
 - **Channel pill** on the left — switch channels, or create your first one.
-- **Stage rail** across the middle — Discover → Ideas → Scripts → Episodes → Publish.
+- **Stage rail** across the middle — Discover → Proposals → Episodes → Publish.
 - **⌘K** — search and navigate everything without leaving the keyboard.
 
 ::: tip
-Only a Gemini or Claude API key (set in the avatar menu → API keys) is needed to start generating. Most features work without any paid keys at all.
+Ollama runs locally and is available to every user — no API key required. Add a Gemini or Claude key (avatar menu → API keys) to unlock those providers.
 :::
 
 ## Next steps
 
 - [Top chrome & ⌘K](/guide/command-palette) — the shortest tour of the new layout
 - [Channels](/guide/channels) — create your first channel
-- [Ideas](/guide/ideas) — start generating content ideas
+- [Episodes](/guide/episodes) — your single backlog and pipeline
+- [Proposals](/guide/proposals) — AI brainstorms your next episode

@@ -35,13 +35,12 @@ export default defineConfig({
       {
         text: 'Make content',
         items: [
-          { text: 'Ideas', link: '/guide/ideas' },
-          { text: 'Scripts', link: '/guide/scripts' },
-          { text: 'Discover', link: '/guide/discover' },
-          { text: 'Audio (TTS)', link: '/guide/audio' },
-          { text: 'Storyboard', link: '/guide/storyboard' },
           { text: 'Episodes', link: '/guide/episodes' },
           { text: 'Proposals', link: '/guide/proposals' },
+          { text: 'Discover', link: '/guide/discover' },
+          { text: 'Scripts', link: '/guide/scripts' },
+          { text: 'Storyboard', link: '/guide/storyboard' },
+          { text: 'Audio (TTS)', link: '/guide/audio' },
           { text: 'Resources', link: '/guide/resources' },
         ],
       },

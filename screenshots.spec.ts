@@ -184,7 +184,7 @@ async function setView(page: Page, view: string) {
 /** Open the channel pill dropdown and click a labelled action (Channel settings). */
 async function clickChannelDropdown(page: Page, label: string) {
   // The pill is the first button in the header after the logo.
-  const pill = page.locator('header button:has(> div.rounded-full)').first();
+  const pill = page.locator('header button:has(div.rounded-full)').first();
   if (!(await pill.isVisible())) return;
   await pill.click();
   await page.waitForTimeout(300);
@@ -854,7 +854,7 @@ test.describe('Documentation Screenshots', () => {
 
       test('create channel form', async ({ page }) => {
         // Open the channel pill dropdown and click "New channel"
-        const pill = page.locator('header button:has(> div.rounded-full)').first();
+        const pill = page.locator('header button:has(div.rounded-full)').first();
         if (await pill.isVisible()) {
           await pill.click();
           await page.waitForTimeout(300);
@@ -895,7 +895,7 @@ test.describe('Documentation Screenshots', () => {
         await selectChannel(page);
         await page.waitForTimeout(400);
         // Open the channel pill dropdown so Settings/Proposals/Jobs items are visible
-        const pill = page.locator('header button:has(> div.rounded-full)').first();
+        const pill = page.locator('header button:has(div.rounded-full)').first();
         if (await pill.isVisible()) {
           await pill.click();
           await page.waitForTimeout(300);
