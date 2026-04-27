@@ -130,14 +130,18 @@ async function apiDelete(path: string) {
   await fetch(`${BASE}${path}`, { method: 'DELETE', headers: AUTH_HEADERS });
 }
 
-// TopChrome navigation helpers (post-Flow-redesign).
+// TopChrome navigation helpers (post-Flow-redesign + post-IA cleanup).
 //
 // The old Sidebar (<aside>) was replaced by TopChrome (<header>) with a
-// channel pill + stage rail (Discover / Ideas / Scripts / Audio / Episodes)
-// + right-rail links (Resources / Settings / Marketplace / Feedback).
-// Channel-scoped actions (Proposals / Jobs / Channel settings) live inside
-// the channel-pill dropdown. Test hook: window.__craftStore exposes the
-// Zustand store for views not on the chrome.
+// channel pill + stage rail (Discover / Proposals / Episodes / Publish)
+// + right-rail links (Marketplace / Settings / Feedback).
+// Ideas, Scripts, and Jobs no longer have their own panels:
+//   - Ideas → Episodes is the single backlog. Proposals "Create Episode"
+//     and Discover "Inspire" both land on the kanban.
+//   - Scripts → reachable only via Episodes → Episode detail → script.
+//   - Jobs → embedded as a section inside Proposals.
+// Test hook: window.__craftStore exposes the Zustand store for views
+// without a chrome entry.
 
 async function selectChannel(page: Page) {
   const id = effectiveChannelId();
@@ -156,7 +160,7 @@ async function selectChannel(page: Page) {
   await page.waitForTimeout(400);
 }
 
-/** Click a primary stage-rail button (Discover / Ideas / Scripts / Audio / Episodes). */
+/** Click a primary stage-rail button (Discover / Proposals / Episodes / Publish). */
 async function clickStageRail(page: Page, label: string) {
   const btn = page.locator('header button', { hasText: new RegExp(`^\\s*${label}\\s*$`, 'i') }).first();
   if (await btn.isVisible()) {
@@ -174,7 +178,7 @@ async function setView(page: Page, view: string) {
   await page.waitForTimeout(800);
 }
 
-/** Open the channel pill dropdown and click a labelled action (Channel settings / Proposals / Jobs). */
+/** Open the channel pill dropdown and click a labelled action (Channel settings). */
 async function clickChannelDropdown(page: Page, label: string) {
   // The pill is the first button in the header after the logo.
   const pill = page.locator('header button:has(> div.rounded-full)').first();
@@ -193,14 +197,18 @@ async function clickChannelDropdown(page: Page, label: string) {
 
 /** Back-compat shims so existing test bodies keep working. */
 async function clickChannelNav(page: Page, label: string) {
-  // Ideas / Scripts / Audio / Episodes now sit on the stage rail.
-  // Channel settings / Proposals / Jobs live in the channel-pill dropdown.
-  if (['Ideas', 'Scripts', 'Audio', 'Episodes', 'Discover'].includes(label)) {
+  // Stage rail: Discover / Proposals / Episodes / Publish.
+  // Channel settings is the only entry left in the channel-pill dropdown.
+  // Ideas / Scripts / Jobs have no nav entries — tests that referenced
+  // them are skipped above; anything left here falls through to setView.
+  if (['Discover', 'Proposals', 'Episodes', 'Publish'].includes(label)) {
     await clickStageRail(page, label);
   } else if (['Settings', 'Channel settings'].includes(label)) {
     await clickChannelDropdown(page, 'Channel settings');
-  } else if (['Proposals', 'Jobs'].includes(label)) {
-    await clickChannelDropdown(page, label);
+  } else if (label === 'Scripts') {
+    // Scripts is only reachable via an episode now — set the view
+    // directly for any legacy test that targets it.
+    await setView(page, 'scripts');
   } else {
     // Fallback: try a header text match
     const btn = page.locator('header button', { hasText: label }).first();
@@ -552,25 +560,11 @@ test.describe('Documentation Screenshots', () => {
         await shotAllSchemes(page, 'landing-page');
       });
 
-      test('ideas panel', async ({ page }) => {
-        await selectChannel(page);
-        await clickChannelNav(page, 'Ideas');
-        await page.waitForTimeout(500);
-        await shotAllSchemes(page, 'ideas-panel');
-      });
-
-      test('ideas generate form', async ({ page }) => {
-        await mockAiIdeas(page);
-        await selectChannel(page);
-        await clickChannelNav(page, 'Ideas');
-        await page.waitForTimeout(300);
-        const genBtn = page.locator('button:has(svg)', { hasText: 'Generate' }).first();
-        if (await genBtn.isVisible()) {
-          await genBtn.click();
-          await page.waitForTimeout(1200);
-        }
-        await shotAllSchemes(page, 'ideas-generate');
-      });
+      // Ideas panel was removed — episodes is the unified backlog surface.
+      // Proposals → Create Episode and Discover → Inspire both land on
+      // the kanban directly.
+      test.skip('ideas panel', async ({ page: _page }) => {});
+      test.skip('ideas generate form', async ({ page: _page }) => {});
 
       test('script editor - draft', async ({ page }) => {
         await selectChannel(page);
@@ -780,13 +774,9 @@ test.describe('Documentation Screenshots', () => {
         await shotAllSchemes(page, 'proposals-panel');
       });
 
-      test('jobs panel', async ({ page }) => {
-        await mockJobs(page);
-        await selectChannel(page);
-        await setView(page, 'jobs');
-        await page.waitForTimeout(800);
-        await shotAllSchemes(page, 'jobs-panel');
-      });
+      // Standalone Jobs panel was removed — JobsList is now embedded as a
+      // section inside ProposalsPanel. The proposals screenshot covers it.
+      test.skip('jobs panel', async ({ page: _page }) => {});
 
       test('episodes panel', async ({ page }) => {
         // Mock episodes API with dummy data at various stages
