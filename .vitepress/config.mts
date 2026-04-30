@@ -9,7 +9,9 @@ export default defineConfig({
     logo: '/logo.png',
     nav: [
       { text: 'Guide', link: '/guide/' },
+      { text: 'Marketplace', link: '/guide/marketplace' },
       { text: 'Open Studio', link: 'https://dev.mossworks.io/studio/', target: '_blank' },
+      { text: 'Open Marketplace', link: 'https://marketplace.mossworks.io/', target: '_blank' },
     ],
     sidebar: [
       {
@@ -41,9 +43,14 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Marketplace',
+        items: [
+          { text: 'Overview', link: '/guide/marketplace' },
+        ],
+      },
+      {
         text: 'Extras',
         items: [
-          { text: 'Marketplace', link: '/guide/marketplace' },
           { text: 'Feedback', link: '/guide/feedback' },
         ],
       },
