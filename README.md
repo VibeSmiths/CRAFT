@@ -95,7 +95,6 @@ docs/
   public/
     screenshots/       # Playwright-captured images
   guide/               # 18 guide pages (top-chrome / ideas / scripts / discover / audio / storyboard / marketplace / etc.)
-  mobile/              # 3 mobile app pages
   seed/                # Demo data for screenshots
   index.md             # Landing page with hero
   screenshots.spec.ts  # Playwright test spec

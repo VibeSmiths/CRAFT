@@ -9,9 +9,6 @@ hero:
       text: Get Started
       link: /guide/
     - theme: alt
-      text: Mobile App
-      link: /mobile/
-    - theme: alt
       text: View on GitHub
       link: https://github.com/Mossworks-Labs/docs
 features:
@@ -39,9 +36,6 @@ features:
   - icon: "\uD83D\uDCDA"
     title: Resource Library
     details: Search 14 royalty-free sources for video, image, audio, and reference material with auto-attribution.
-  - icon: "\uD83D\uDCF1"
-    title: Mobile Companion
-    details: Android app for ideas, scripts, and YouTube research on the go. Connects over local network.
   - icon: "\uD83D\uDD10"
     title: Authentication & Role-Based Access
     details: Single sign-on with four roles (admin, editor, premium, standard). Multi-tenant channel isolation, 3-tier model access, and per-user encrypted API key storage.
